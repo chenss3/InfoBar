@@ -11,37 +11,59 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment ="Top"
                             Background="Black">
-                        <Grid x:Name="ContentRootGrid">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="ButtonStates">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="ButtonStates">
+
+                                <VisualState x:Name="NoButtonsVisible">
+                                    <VisualState.Setters>
+                                        <Setter Target="CloseButton.Visibility" Value="Collapsed"/>
+                                        <Setter Target="ActionButton.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CloseButtonVisible">
+                                    <VisualState.Setters>
+                                        <Setter Target="CloseButton.Visibility" Value="Visible"/>
+                                        <Setter Target="ActionButton.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="ActionButtonVisible">
+                                    <VisualState.Setters>
+                                        <Setter Target="ActionButton.Visibility" Value="Visible"/>
+                                        <Setter Target="CloseButton.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="BothButtonsVisible">
+                                    <VisualState.Setters>
+                                        <Setter Target="CloseButton.Visibility" Value="Visible"/>
+                                        <Setter Target="ActionButton.Visibility" Value="Visible"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="CloseButtonLocations">
+                                <VisualState x:Name="DefaultCloseButton">
+                                    <VisualState.Setters>
+                                        <Setter Target="AlternateCloseButton.Visibility" Value="Visible"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CustomCloseButton">
+                                    <VisualState.Setters>
+                                        <Setter Target="AlternateCloseButton.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SeverityLevels">
+                                <VisualState x:Name="Critical">
+                                    <VisualState.Setters>
+                                        <Setter Target="StatusColor"/>
+                                    </VisualState.Setters>
                                     
-                                    <VisualState x:Name="NoButtonsVisible">
-                                        <VisualState.Setters>
-                                            <Setter Target="CloseButton.Visbility" Value="Collapsed"/>
-                                            <Setter Target="ActionButton.Visibility" Value="Collapsed"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="CloseButtonVisible">
-                                        <VisualState.Setters>
-                                            <Setter Target="CloseButton.Visibility" Value="Visible"/>
-                                            <Setter Target="ActionButton.Visibility" Value="Collapsed"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="ActionButtonVisible">
-                                        <VisualState.Setters>
-                                            <Setter Target="ActionButton.Visibility" Value="Visible"/>
-                                            <Setter Target="CloseButton.Visibility" Value="Collapsed"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                    <VisualState x:Name="BothButtonsVisible">
-                                        <VisualState.Setters>
-                                            <Setter Target="CloseButton.Visibility" Value="Visible"/>
-                                            <Setter Target="ActionButton.Visibility" Value="Visible"/>
-                                        </VisualState.Setters>
-                                    </VisualState>
-                                </VisualStateGroup>
+                                </VisualState>
                                 
-                            </VisualStateManager.VisualStateGroups>
+                            </VisualStateGroup>
+
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid x:Name="ContentRootGrid">
+                            
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
@@ -57,17 +79,17 @@
 
                             <TextBlock x:Name="MyTitle" Text="{TemplateBinding Title}" Grid.Column="2"/>
 
-                            <SymbolIcon x:Name="MyIcon" Symbol="{TemplateBinding Icon}" Grid.Column="1" HorizontalAlignment="Left"/>
+                            <IconSourceElement x:Name="MyIcon" IconSource="{TemplateBinding IconSource}" Grid.Column="1" HorizontalAlignment="Left"/>
                             <TextBlock x:Name="MyMessage" Text="{TemplateBinding Message}" Grid.Column="2"/>
                             <Rectangle x:Name="MyStatusColor" Fill="{TemplateBinding StatusColor}" Height="70" Width="50" Grid.Column="0" HorizontalAlignment="Left"/>
                             
                             <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
-                                <Button Name="ActionButton" Content="{TemplateBinding ActionButtonContent}"/>
+                                <Button Name="ActionButton" Content="{TemplateBinding ActionButtonContent}" Command="{TemplateBinding ActionButtonCommand}"/>
 
                                 <Button Name="AlternateCloseButton">
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button>
-                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}"/>
+                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}"/>
 
                             </StackPanel>
                             

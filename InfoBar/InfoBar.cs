@@ -10,14 +10,22 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using System.Drawing;
 using Windows.UI;
+using System.Windows.Input;
 
 
 // The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
 
 namespace InfoBar
 {
+    public enum InfoBarSeverity
+    {
+        Critical, 
+        Warning,
+        Informational,
+        Success,
+        Default
+    }
     public sealed class InfoBar : ContentControl
     {
         public InfoBar()
@@ -28,12 +36,15 @@ namespace InfoBar
         Button _alternateCloseButton;
         Button _closeButton;
         Border _myBorder;
+        Button _actionButton;
 
+        public event EventHandler<RoutedEventArgs> ActionButtonClick;
 
         protected override void OnApplyTemplate()
         {
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
             _closeButton = GetTemplateChild<Button>("CloseButton");
+            _actionButton = GetTemplateChild<Button>("ActionButton");
             _myBorder = GetTemplateChild<Border>("Container");
 
 
@@ -42,6 +53,7 @@ namespace InfoBar
 
             _alternateCloseButton.Click += new RoutedEventHandler(CloseButtonClick);
 
+            _actionButton.Click += (s, e) => ActionButtonClick?.Invoke(s, e);
 
             UpdateIsOpen();
             
@@ -56,6 +68,28 @@ namespace InfoBar
             }
             return child;
         }
+
+
+        public ICommand ActionButtonCommand
+        {
+            get { return (ICommand)GetValue(ActionButtonCommandProperty); }
+            set { SetValue(ActionButtonCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ActionButtonCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ActionButtonCommandProperty =
+            DependencyProperty.Register(nameof(ActionButtonCommand), typeof(ICommand), typeof(InfoBar), new PropertyMetadata(null));
+
+        public ICommand CloseButtonCommand
+        {
+            get { return (ICommand)GetValue(CloseButtonCommandProperty); }
+            set { SetValue(CloseButtonCommandProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CloseButtonCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CloseButtonCommandProperty =
+            DependencyProperty.Register(nameof(CloseButtonCommand), typeof(ICommand), typeof(InfoBar), new PropertyMetadata(null));
+
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
@@ -78,15 +112,15 @@ namespace InfoBar
             DependencyProperty.Register(nameof(Message), typeof(string), typeof(InfoBar), new PropertyMetadata("Message Here"));
 
 
-        public Symbol Icon
+        public IconSource IconSource
         {
-            get { return (Symbol)GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get { return (IconSource)GetValue(IconSourceProperty); }
+            set { SetValue(IconSourceProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for Icon.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IconProperty =
-            DependencyProperty.Register(nameof(Icon), typeof(Symbol), typeof(InfoBar), new PropertyMetadata(null));
+        // Using a DependencyProperty as the backing store for IconSource.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IconSourceProperty =
+            DependencyProperty.Register(nameof(IconSource), typeof(IconSource), typeof(InfoBar), new PropertyMetadata(null));
 
 
         public bool IsOpen
@@ -99,16 +133,16 @@ namespace InfoBar
         public static readonly DependencyProperty IsOpenProperty =
             DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(InfoBar), new PropertyMetadata(false));
 
-
-        public Brush StatusColor
+        //Which Color am I supposed to use? 
+        public Color StatusColor
         {
-            get { return (Brush)GetValue(StatusColorProperty); }
+            get { return (Color)GetValue(StatusColorProperty); }
             set { SetValue(StatusColorProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for StatusColor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StatusColorProperty =
-            DependencyProperty.Register(nameof(StatusColor), typeof(Brush), typeof(InfoBar), new PropertyMetadata(new SolidColorBrush(Colors.Gray)));
+            DependencyProperty.Register(nameof(StatusColor), typeof(Color), typeof(InfoBar), new PropertyMetadata(null));
 
 
         public object CloseButtonContent
@@ -124,13 +158,44 @@ namespace InfoBar
 
         public object ActionButtonContent   
         {
-            get { return (object)GetValue(ActionButtonContentyProperty); }
-            set { SetValue(ActionButtonContentyProperty, value); }
+            get { return (object)GetValue(ActionButtonContentProperty); }
+            set { SetValue(ActionButtonContentProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ActionButtonContentyProperty =
+        public static readonly DependencyProperty ActionButtonContentProperty =
             DependencyProperty.Register(nameof(ActionButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+
+
+
+        public bool ShowCloseButton
+        {
+            get { return (bool)GetValue(ShowCloseButtonProperty); }
+            set { SetValue(ShowCloseButtonProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ShowCloseButton.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ShowCloseButtonProperty =
+            DependencyProperty.Register(nameof(ShowCloseButton), typeof(bool), typeof(InfoBar), new PropertyMetadata(false));
+
+
+
+        public InfoBarSeverity Severity
+        {
+            get { return (InfoBarSeverity)GetValue(SeverityProperty); }
+            set { SetValue(SeverityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Severity.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SeverityProperty =
+            DependencyProperty.Register(nameof(Severity), typeof(InfoBarSeverity), typeof(InfoBar), new PropertyMetadata(InfoBarSeverity.Default));
+
+
+
+
+
+
+
 
 
 
@@ -142,6 +207,11 @@ namespace InfoBar
             _myBorder.Visibility = Visibility.Collapsed;
 
         }
+
+
+
+
+
 
         void UpdateIsOpen()
         {
@@ -158,19 +228,23 @@ namespace InfoBar
         {
             if (CloseButtonContent != null && ActionButtonContent != null)
             {
-                VisualStateManager.GoToState(this, "BothButtonsVisible", false);
+                VisualStateManager.GoToState(this, "BothButtonsVisible", false); 
+                VisualStateManager.GoToState(this, "CustomCloseButton", false);
             }
             else if (CloseButtonContent != null)
             {
                 VisualStateManager.GoToState(this, "CloseButtonVisible", false);
+                VisualStateManager.GoToState(this, "CustomCloseButton", false);
             }
             else if (ActionButtonContent != null)
             {
                 VisualStateManager.GoToState(this, "ActionButtonVisible", false);
+                VisualStateManager.GoToState(this, "DefaultCloseButton", false);
             }
-            else
+            else if (ActionButtonContent == null && CloseButtonContent == null)
             {
                 VisualStateManager.GoToState(this, "NoButtonsVisible", false);
+                VisualStateManager.GoToState(this, "UserCloseButton", false);
             }
         }
 
