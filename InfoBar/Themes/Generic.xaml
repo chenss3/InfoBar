@@ -45,7 +45,7 @@
                                         <Setter Target="AlternateCloseButton.Visibility" Value="Visible"/>
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="CustomCloseButton">
+                                <VisualState x:Name="NoDefaultCloseButton">
                                     <VisualState.Setters>
                                         <Setter Target="AlternateCloseButton.Visibility" Value="Collapsed"/>
                                     </VisualState.Setters>
@@ -54,11 +54,51 @@
                             <VisualStateGroup x:Name="SeverityLevels">
                                 <VisualState x:Name="Critical">
                                     <VisualState.Setters>
-                                        <Setter Target="StatusColor"/>
+                                        <Setter Target="MyBrush.Color" Value="#D13438"/>
+                                        <Setter Target="MyIcon.IconSource">
+                                            <Setter.Value>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xEA39;"/>
+                                            </Setter.Value>
+                                        </Setter>
                                     </VisualState.Setters>
-                                    
                                 </VisualState>
-                                
+                                <VisualState x:Name="Warning">
+                                    <VisualState.Setters>
+                                        <Setter Target="MyBrush.Color" Value="#FF8C00"/>
+                                        <Setter Target="MyIcon.IconSource">
+                                            <Setter.Value>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE783;"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Informational">
+                                    <VisualState.Setters>
+                                        <Setter Target="MyBrush.Color" Value="#0078D7"/>
+                                        <Setter Target="MyIcon.IconSource">
+                                            <Setter.Value>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Success">
+                                    <VisualState.Setters>
+                                        <Setter Target="MyBrush.Color" Value="#107C10"/>
+                                        <Setter Target="MyIcon.IconSource">
+                                            <Setter.Value>
+                                                <FontIconSource FontFamily="Segoe MDL2 Assets" Glyph="&#xF13E;"/>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Default">
+                                    <VisualState.Setters>
+                                        <Setter Target="MyBrush.Color" Value="#69797E"/>
+                                        <Setter Target="MyIcon.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+
                             </VisualStateGroup>
 
                         </VisualStateManager.VisualStateGroups>
@@ -77,19 +117,24 @@
                                    Grid.Column="0" 
                                    Grid.ColumnSpan="3"/>
 
-                            <TextBlock x:Name="MyTitle" Text="{TemplateBinding Title}" Grid.Column="2"/>
+                            <TextBlock x:Name="MyTitle" Text="{TemplateBinding Title}" FontWeight="SemiBold" Grid.Column="2"/>
 
                             <IconSourceElement x:Name="MyIcon" IconSource="{TemplateBinding IconSource}" Grid.Column="1" HorizontalAlignment="Left"/>
-                            <TextBlock x:Name="MyMessage" Text="{TemplateBinding Message}" Grid.Column="2"/>
-                            <Rectangle x:Name="MyStatusColor" Fill="{TemplateBinding StatusColor}" Height="70" Width="50" Grid.Column="0" HorizontalAlignment="Left"/>
                             
-                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
-                                <Button Name="ActionButton" Content="{TemplateBinding ActionButtonContent}" Command="{TemplateBinding ActionButtonCommand}"/>
+                            <TextBlock x:Name="MyMessage" Text="{TemplateBinding Message}" Grid.Column="2"/>
+                            <Rectangle x:Name="MyStatusColor"  Height="70" Width="50" Grid.Column="0" HorizontalAlignment="Left">
+                                <Rectangle.Fill>
+                                    <SolidColorBrush x:Name="MyBrush" Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(local:InfoBar.StatusColor)}"/>
+                                </Rectangle.Fill> 
+                            </Rectangle>
 
-                                <Button Name="AlternateCloseButton">
+                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
+                                <Button Name="ActionButton" Content="{TemplateBinding ActionButtonContent}" Command="{TemplateBinding ActionButtonCommand}" Style="{TemplateBinding ActionButtonStyle}"/>
+
+                                <Button Name="AlternateCloseButton" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}">
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button>
-                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}"/>
+                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}"/>
 
                             </StackPanel>
                             

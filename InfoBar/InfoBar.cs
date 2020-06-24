@@ -12,12 +12,18 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI;
 using System.Windows.Input;
+using Windows.Foundation;
 
 
 // The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
 
 namespace InfoBar
 {
+    public enum InfoBarCloseReason
+    {
+        CloseButton,
+        Progmattic
+    }
     public enum InfoBarSeverity
     {
         Critical, 
@@ -25,6 +31,34 @@ namespace InfoBar
         Informational,
         Success,
         Default
+    }
+
+    public class InfoBarClosedEventArgs : EventArgs
+    {
+        InfoBarCloseReason Reason
+        {
+            get; set;
+        }
+    }
+    
+    public class InfoBarClosingEventArgs : EventArgs
+    {
+        InfoBarCloseReason Reason
+        {
+            get; set;
+        }
+        bool Cancel
+        {
+            get; set; 
+        }
+        
+    }
+    public class InfoBarEventArgs : EventArgs
+    {
+        public bool IsHandled
+        {
+            get; set;
+        }
     }
     public sealed class InfoBar : ContentControl
     {
@@ -39,6 +73,9 @@ namespace InfoBar
         Button _actionButton;
 
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
+        public event EventHandler<InfoBarEventArgs> CloseButtonClick;
+        public event TypedEventHandler<InfoBar, InfoBarClosedEventArgs> Closed;
+        public event TypedEventHandler<InfoBar, InfoBarClosingEventArgs> Closing; 
 
         protected override void OnApplyTemplate()
         {
@@ -49,13 +86,14 @@ namespace InfoBar
 
 
             UpdateButtonsState();
-            _closeButton.Click += new RoutedEventHandler(CloseButtonClick);
+            _closeButton.Click += new RoutedEventHandler(OnCloseButtonClick);
 
-            _alternateCloseButton.Click += new RoutedEventHandler(CloseButtonClick);
+            _alternateCloseButton.Click += new RoutedEventHandler(OnCloseButtonClick);
 
             _actionButton.Click += (s, e) => ActionButtonClick?.Invoke(s, e);
 
             UpdateIsOpen();
+            UpdateSeverityState();
             
         }
 
@@ -69,7 +107,7 @@ namespace InfoBar
             return child;
         }
 
-
+        
         public ICommand ActionButtonCommand
         {
             get { return (ICommand)GetValue(ActionButtonCommandProperty); }
@@ -80,6 +118,33 @@ namespace InfoBar
         public static readonly DependencyProperty ActionButtonCommandProperty =
             DependencyProperty.Register(nameof(ActionButtonCommand), typeof(ICommand), typeof(InfoBar), new PropertyMetadata(null));
 
+
+
+        public object ActionButtonCommandParameter
+        {
+            get { return (object)GetValue(ActionButtonCommandParameterProperty); }
+            set { SetValue(ActionButtonCommandParameterProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ActionButtonCommandParameter.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ActionButtonCommandParameterProperty =
+            DependencyProperty.Register(nameof(ActionButtonCommandParameter), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+
+
+        public Style ActionButtonStyle
+        {
+            get { return (Style)GetValue(ActionButtonStyleProperty); }
+            set { SetValue(ActionButtonStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ActionButtonStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ActionButtonStyleProperty =
+            DependencyProperty.Register(nameof(ActionButtonStyle), typeof(Style), typeof(InfoBar), new PropertyMetadata(null));
+
+
+
+
+
         public ICommand CloseButtonCommand
         {
             get { return (ICommand)GetValue(CloseButtonCommandProperty); }
@@ -89,6 +154,32 @@ namespace InfoBar
         // Using a DependencyProperty as the backing store for CloseButtonCommand.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CloseButtonCommandProperty =
             DependencyProperty.Register(nameof(CloseButtonCommand), typeof(ICommand), typeof(InfoBar), new PropertyMetadata(null));
+
+
+        public object CloseButtonCommandParameter
+        {
+            get { return (object)GetValue(CloseButtonCommandParameterProperty); }
+            set { SetValue(CloseButtonCommandParameterProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CloseButtonCommandParameter.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CloseButtonCommandParameterProperty =
+            DependencyProperty.Register(nameof(CloseButtonCommandParameter), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+
+
+        public Style CloseButtonStyle
+        {
+            get { return (Style)GetValue(CloseButtonStyleProperty); }
+            set { SetValue(CloseButtonStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for CloseButtonStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CloseButtonStyleProperty =
+            DependencyProperty.Register(nameof(CloseButtonStyle), typeof(Style), typeof(InfoBar), new PropertyMetadata(null));
+
+
+
+
 
         public string Title
         {
@@ -176,7 +267,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for ShowCloseButton.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ShowCloseButtonProperty =
-            DependencyProperty.Register(nameof(ShowCloseButton), typeof(bool), typeof(InfoBar), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(ShowCloseButton), typeof(bool), typeof(InfoBar), new PropertyMetadata(true));
 
 
 
@@ -192,6 +283,7 @@ namespace InfoBar
 
 
 
+  
 
 
 
@@ -201,10 +293,21 @@ namespace InfoBar
 
 
 
-        void CloseButtonClick(object sender, RoutedEventArgs e)
+
+
+        private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            IsOpen = false;
-            _myBorder.Visibility = Visibility.Collapsed;
+            InfoBarEventArgs newE = new InfoBarEventArgs();
+            if (CloseButtonClick != null)
+            {
+                
+                CloseButtonClick.Invoke(this, newE);
+            }
+            if (newE.IsHandled == false)
+            {
+                IsOpen = false;
+                _myBorder.Visibility = Visibility.Collapsed;
+            }
 
         }
 
@@ -226,25 +329,65 @@ namespace InfoBar
 
         void UpdateButtonsState()
         {
-            if (CloseButtonContent != null && ActionButtonContent != null)
+            if (ShowCloseButton)
             {
-                VisualStateManager.GoToState(this, "BothButtonsVisible", false); 
-                VisualStateManager.GoToState(this, "CustomCloseButton", false);
+                if (CloseButtonContent != null && ActionButtonContent != null)
+                {
+                    VisualStateManager.GoToState(this, "BothButtonsVisible", false);
+                    VisualStateManager.GoToState(this, "NoDefaultCloseButton", false);
+                }
+                else if (CloseButtonContent != null)
+                {
+                    VisualStateManager.GoToState(this, "CloseButtonVisible", false);
+                    VisualStateManager.GoToState(this, "NoDefaultCloseButton", false);
+                }
+                else if (ActionButtonContent != null)
+                {
+                    VisualStateManager.GoToState(this, "ActionButtonVisible", false);
+                    VisualStateManager.GoToState(this, "DefaultCloseButton", false);
+                }
+                else if (ActionButtonContent == null && CloseButtonContent == null)
+                {
+                    VisualStateManager.GoToState(this, "NoButtonsVisible", false);
+                    VisualStateManager.GoToState(this, "DefaultCloseButton", false);
+                }
             }
-            else if (CloseButtonContent != null)
+            else
             {
-                VisualStateManager.GoToState(this, "CloseButtonVisible", false);
-                VisualStateManager.GoToState(this, "CustomCloseButton", false);
+                VisualStateManager.GoToState(this, "NoDefaultCloseButton", false);
+                if (ActionButtonContent != null)
+                {
+                    VisualStateManager.GoToState(this, "ActionButtonVisible", false);
+                    
+                }
+                else
+                {
+                    VisualStateManager.GoToState(this, "NoButtonsVisible", false);
+                }
             }
-            else if (ActionButtonContent != null)
+        }
+
+        void UpdateSeverityState()
+        {
+            if (Severity == InfoBarSeverity.Critical)
             {
-                VisualStateManager.GoToState(this, "ActionButtonVisible", false);
-                VisualStateManager.GoToState(this, "DefaultCloseButton", false);
+                VisualStateManager.GoToState(this, "Critical", false);
             }
-            else if (ActionButtonContent == null && CloseButtonContent == null)
+            else if (Severity == InfoBarSeverity.Warning)
             {
-                VisualStateManager.GoToState(this, "NoButtonsVisible", false);
-                VisualStateManager.GoToState(this, "UserCloseButton", false);
+                VisualStateManager.GoToState(this, "Warning", false);
+            }
+            else if (Severity == InfoBarSeverity.Informational)
+            {
+                VisualStateManager.GoToState(this, "Informational", false);
+            }
+            else if (Severity == InfoBarSeverity.Success)
+            {
+                VisualStateManager.GoToState(this, "Success", false);
+            } 
+            else
+            {
+                VisualStateManager.GoToState(this, "Default", false);
             }
         }
 
@@ -252,4 +395,6 @@ namespace InfoBar
 
 
     }
+
+
 }

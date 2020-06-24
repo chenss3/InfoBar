@@ -28,6 +28,15 @@ namespace InfoBar
             this.InitializeComponent();
         }
 
+        private async void Test_ActionButtonClick(object sender, RoutedEventArgs e)
+        {
+            await new MessageDialog("Thank you, mate").ShowAsync();
+        }
 
+        private async void Test_CloseButtonClick(object sender, InfoBarEventArgs e)
+        {
+            e.IsHandled = true;
+            await new MessageDialog("Thank you, mate").ShowAsync();
+        }
     }
 }
