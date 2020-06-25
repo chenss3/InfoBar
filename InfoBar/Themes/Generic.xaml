@@ -134,7 +134,7 @@
                                 <Button Name="AlternateCloseButton" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}">
                                     <SymbolIcon Symbol="Cancel"/>
                                 </Button>
-                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}"/>
+                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}" />
 
                             </StackPanel>
                             

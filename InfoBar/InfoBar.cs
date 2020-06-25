@@ -22,7 +22,7 @@ namespace InfoBar
     public enum InfoBarCloseReason
     {
         CloseButton,
-        Progmattic
+        Programattic
     }
     public enum InfoBarSeverity
     {
@@ -35,7 +35,7 @@ namespace InfoBar
 
     public class InfoBarClosedEventArgs : EventArgs
     {
-        InfoBarCloseReason Reason
+        public InfoBarCloseReason Reason
         {
             get; set;
         }
@@ -43,11 +43,11 @@ namespace InfoBar
     
     public class InfoBarClosingEventArgs : EventArgs
     {
-        InfoBarCloseReason Reason
+        public InfoBarCloseReason Reason //is this allowed to be public? 
         {
             get; set;
         }
-        bool Cancel
+        public bool Cancel
         {
             get; set; 
         }
@@ -77,6 +77,8 @@ namespace InfoBar
         public event TypedEventHandler<InfoBar, InfoBarClosedEventArgs> Closed;
         public event TypedEventHandler<InfoBar, InfoBarClosingEventArgs> Closing; 
 
+        private InfoBarCloseReason lastCloseReason = InfoBarCloseReason.Programattic; 
+
         protected override void OnApplyTemplate()
         {
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
@@ -90,9 +92,11 @@ namespace InfoBar
 
             _alternateCloseButton.Click += new RoutedEventHandler(OnCloseButtonClick);
 
+          
+
             _actionButton.Click += (s, e) => ActionButtonClick?.Invoke(s, e);
 
-            UpdateIsOpen();
+            OnIsOpenChanged();
             UpdateSeverityState();
             
         }
@@ -288,43 +292,50 @@ namespace InfoBar
 
 
 
-
-
-
-
-
-
-
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
+
+            lastCloseReason = InfoBarCloseReason.CloseButton;
             InfoBarEventArgs newE = new InfoBarEventArgs();
             if (CloseButtonClick != null)
             {
-                
                 CloseButtonClick.Invoke(this, newE);
             }
             if (newE.IsHandled == false)
             {
-                IsOpen = false;
-                _myBorder.Visibility = Visibility.Collapsed;
+                RaiseClosingEvent();
+                Open(IsOpen);
+                RaiseClosedEvent();
             }
 
         }
 
-
-
-
-
-
-        void UpdateIsOpen()
+        private void Open(bool value)
         {
-            if (IsOpen)
+            if (value)
             {
                 _myBorder.Visibility = Visibility.Visible;
+                IsOpen = true; 
             } else
             {
                 _myBorder.Visibility = Visibility.Collapsed;
+                IsOpen = false; 
             }
+        }
+
+        void OnIsOpenChanged()
+        {
+            if (IsOpen)
+            {
+                lastCloseReason = InfoBarCloseReason.Programattic;
+
+            } else
+            {
+                
+                RaiseClosingEvent();
+                RaiseClosedEvent();
+            }
+            Open(IsOpen);
         }
 
         void UpdateButtonsState()
@@ -389,6 +400,37 @@ namespace InfoBar
             {
                 VisualStateManager.GoToState(this, "Default", false);
             }
+        }
+
+        void RaiseClosingEvent()
+        {
+            InfoBarClosingEventArgs args = new InfoBarClosingEventArgs();
+            args.Reason = lastCloseReason;
+
+            if (Closing != null)
+            {
+                Closing.Invoke(this, args);
+            }
+
+            if (!args.Cancel)
+            {
+                _myBorder.Visibility = Visibility.Collapsed;
+                IsOpen = false;
+            } else
+            {
+                // The developer has changed the Cancel property to true, indicating that they wish to Cancel the
+                // closing of this tip, so we need to revert the IsOpen property to true.
+                IsOpen = true; 
+            }
+            
+            
+        }
+
+        void RaiseClosedEvent()
+        {
+            InfoBarClosedEventArgs args = new InfoBarClosedEventArgs();
+            args.Reason = lastCloseReason;
+            Closed.Invoke(this, args); 
         }
 
 

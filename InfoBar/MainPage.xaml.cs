@@ -38,5 +38,17 @@ namespace InfoBar
             e.IsHandled = true;
             await new MessageDialog("Thank you, mate").ShowAsync();
         }
+
+        private async void Test_Closing(InfoBar sender, InfoBarClosingEventArgs args)
+        {
+            
+            await new MessageDialog("Thank you, mate im closing").ShowAsync();
+        }
+
+        private async void Test_Closed(InfoBar.InfoBar.InfoBar sender, InfoBar.InfoBar.InfoBarClosedEventArgs args)
+        {
+            
+            await new MessageDialog("Thank you, mate ive closed").ShowAsync();
+        }
     }
 }

@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <local:InfoBar Name="Test" Title="Error" Message="More Message" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonContent="Thing" CloseButtonContent="Dismiss" ShowCloseButton="False" ActionButtonClick="Test_ActionButtonClick" Severity="Critical">
+        <local:InfoBar Name="Test" Title="Error" Message="More Message" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonContent="Thing" CloseButtonContent="Dismiss" ActionButtonClick="Test_ActionButtonClick" Severity="Critical" Closing="Test_Closing" Closed="Test_Closed">
             <!-- <local:InfoBar.IconSource>
                 <SymbolIconSource Symbol ="Pin"/>
             </local:InfoBar.IconSource> -->
