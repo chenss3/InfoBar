@@ -13,9 +13,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI;
 using System.Windows.Input;
 using Windows.Foundation;
-
-
-// The Templated Control item template is documented at https://go.microsoft.com/fwlink/?LinkId=234235
+using Windows.UI.Composition;
 
 namespace InfoBar
 {
@@ -30,7 +28,8 @@ namespace InfoBar
         Warning,
         Informational,
         Success,
-        Default
+        Default,
+        None
     }
 
     public class InfoBarClosedEventArgs : EventArgs
@@ -71,6 +70,10 @@ namespace InfoBar
         Button _closeButton;
         Border _myBorder;
         Button _actionButton;
+        IconSourceElement _myIcon;
+        //String _myTitle;
+        //String _myMessage;
+        //Color _myStatusColor;
 
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
         public event EventHandler<InfoBarEventArgs> CloseButtonClick;
@@ -79,12 +82,17 @@ namespace InfoBar
 
         private InfoBarCloseReason lastCloseReason = InfoBarCloseReason.Programattic; 
 
+        
         protected override void OnApplyTemplate()
         {
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
             _closeButton = GetTemplateChild<Button>("CloseButton");
             _actionButton = GetTemplateChild<Button>("ActionButton");
             _myBorder = GetTemplateChild<Border>("Container");
+            _myIcon = GetTemplateChild<IconSourceElement>("MyIcon");
+            //_myTitle = GetTemplateChild<string>("MyTitle");
+           // _myMessage = GetTemplateChild<String>("MyMessage");
+           //_myStatusColor = GetTemplateChild<Color>("MyBrush");
 
 
             UpdateButtonsState();
@@ -193,7 +201,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(nameof(Title), typeof(string), typeof(InfoBar), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Title), typeof(string), typeof(InfoBar), new PropertyMetadata(""));
 
 
         public string Message
@@ -204,7 +212,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for Message.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MessageProperty =
-            DependencyProperty.Register(nameof(Message), typeof(string), typeof(InfoBar), new PropertyMetadata("Message Here"));
+            DependencyProperty.Register(nameof(Message), typeof(string), typeof(InfoBar), new PropertyMetadata(""));
 
 
         public IconSource IconSource
@@ -215,7 +223,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for IconSource.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IconSourceProperty =
-            DependencyProperty.Register(nameof(IconSource), typeof(IconSource), typeof(InfoBar), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(IconSource), typeof(IconSource), typeof(InfoBar), new PropertyMetadata(default));
 
 
         public bool IsOpen
@@ -226,9 +234,9 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for IsOpen.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsOpenProperty =
-            DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(InfoBar), new PropertyMetadata(false));
+            DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(InfoBar), new PropertyMetadata(false, OnPropertyChanged));
 
-        //Which Color am I supposed to use? 
+
         public Color StatusColor
         {
             get { return (Color)GetValue(StatusColorProperty); }
@@ -237,7 +245,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for StatusColor.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty StatusColorProperty =
-            DependencyProperty.Register(nameof(StatusColor), typeof(Color), typeof(InfoBar), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(StatusColor), typeof(Color), typeof(InfoBar), new PropertyMetadata(Color.FromArgb(0, 0, 0, 0)));
 
 
         public object CloseButtonContent
@@ -248,7 +256,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for CloseButtonContent.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CloseButtonContentProperty =
-            DependencyProperty.Register(nameof(CloseButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(CloseButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null, OnPropertyChanged));
 
 
         public object ActionButtonContent   
@@ -259,7 +267,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ActionButtonContentProperty =
-            DependencyProperty.Register(nameof(ActionButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(ActionButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null, OnPropertyChanged));
 
 
 
@@ -283,12 +291,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for Severity.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SeverityProperty =
-            DependencyProperty.Register(nameof(Severity), typeof(InfoBarSeverity), typeof(InfoBar), new PropertyMetadata(InfoBarSeverity.Default));
-
-
-
-  
-
+            DependencyProperty.Register(nameof(Severity), typeof(InfoBarSeverity), typeof(InfoBar), new PropertyMetadata(InfoBarSeverity.Default, OnPropertyChanged));
 
 
 
@@ -312,14 +315,19 @@ namespace InfoBar
 
         private void Open(bool value)
         {
-            if (value)
+            if (_myBorder != null)
             {
-                _myBorder.Visibility = Visibility.Visible;
-                IsOpen = true; 
-            } else
-            {
-                _myBorder.Visibility = Visibility.Collapsed;
-                IsOpen = false; 
+
+                if (value)
+                {
+                    _myBorder.Visibility = Visibility.Visible;
+                    IsOpen = true;
+                }
+                else
+                {
+                    _myBorder.Visibility = Visibility.Collapsed;
+                    IsOpen = false;
+                }
             }
         }
 
@@ -378,6 +386,27 @@ namespace InfoBar
             }
         }
 
+
+        private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DependencyProperty property = e.Property;
+            InfoBar infoBar = d as InfoBar;
+            if (property == SeverityProperty)
+            {
+                
+                infoBar.UpdateSeverityState();
+            }
+            else if (property == ActionButtonContentProperty || property == CloseButtonContentProperty)
+            {
+                infoBar.UpdateButtonsState();
+            }
+            else if (property == IsOpenProperty)
+            {
+                infoBar.OnIsOpenChanged(); 
+            }
+
+        }
+
         void UpdateSeverityState()
         {
             if (Severity == InfoBarSeverity.Critical)
@@ -396,7 +425,10 @@ namespace InfoBar
             {
                 VisualStateManager.GoToState(this, "Success", false);
             } 
-            else
+            else if (Severity == InfoBarSeverity.None)
+            {
+                VisualStateManager.GoToState(this, "None", false);
+            } else
             {
                 VisualStateManager.GoToState(this, "Default", false);
             }
@@ -404,7 +436,7 @@ namespace InfoBar
 
         void RaiseClosingEvent()
         {
-            InfoBarClosingEventArgs args = new InfoBarClosingEventArgs();
+            InfoBarClosingEventArgs args =  new InfoBarClosingEventArgs();
             args.Reason = lastCloseReason;
 
             if (Closing != null)
@@ -430,7 +462,11 @@ namespace InfoBar
         {
             InfoBarClosedEventArgs args = new InfoBarClosedEventArgs();
             args.Reason = lastCloseReason;
-            Closed.Invoke(this, args); 
+            if (Closed!= null)
+            {
+                Closed.Invoke(this, args);
+            }
+            
         }
 
 

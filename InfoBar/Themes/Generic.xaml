@@ -7,10 +7,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="local:InfoBar">
-                    <Border x:Name="Container"
+                    <Border x:Name="Container" Height="70"
                             HorizontalAlignment="Left"
                             VerticalAlignment ="Top"
-                            Background="Black">
+                            Background="LightGray">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="ButtonStates">
 
@@ -95,48 +95,64 @@
                                 <VisualState x:Name="Default">
                                     <VisualState.Setters>
                                         <Setter Target="MyBrush.Color" Value="#69797E"/>
-                                        <Setter Target="MyIcon.Visibility" Value="Collapsed"/>
+                                        
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="None">
+                                    <VisualState.Setters>
+                                        <Setter Target="MyBrush.Color" Value="Transparent"/>
+                                        
+                                        
                                     </VisualState.Setters>
                                 </VisualState>
 
                             </VisualStateGroup>
 
+
                         </VisualStateManager.VisualStateGroups>
-                        <Grid x:Name="ContentRootGrid">
+                        <Grid x:Name="ContentRootGrid" >
                             
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*"/>
                                 <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="7*"/>
                                 <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                
                             </Grid.ColumnDefinitions>
                             <Rectangle Height="70"
-                                   Width="1100"
+                                   Width="1900"
                                    Fill="LightGray" 
                                    Grid.Column="0" 
-                                   Grid.ColumnSpan="3"/>
+                                   Grid.ColumnSpan="6"/>
 
-                            <TextBlock x:Name="MyTitle" Text="{TemplateBinding Title}" FontWeight="SemiBold" Grid.Column="2"/>
 
-                            <IconSourceElement x:Name="MyIcon" IconSource="{TemplateBinding IconSource}" Grid.Column="1" HorizontalAlignment="Left"/>
-                            
-                            <TextBlock x:Name="MyMessage" Text="{TemplateBinding Message}" Grid.Column="2"/>
+
                             <Rectangle x:Name="MyStatusColor"  Height="70" Width="50" Grid.Column="0" HorizontalAlignment="Left">
                                 <Rectangle.Fill>
                                     <SolidColorBrush x:Name="MyBrush" Color="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(local:InfoBar.StatusColor)}"/>
-                                </Rectangle.Fill> 
+                                </Rectangle.Fill>
                             </Rectangle>
+                            
+                            <IconSourceElement x:Name="MyIcon" IconSource="{TemplateBinding IconSource}" Grid.Column="1" HorizontalAlignment="Right" />
 
-                            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right">
-                                <Button Name="ActionButton" Content="{TemplateBinding ActionButtonContent}" Command="{TemplateBinding ActionButtonCommand}" Style="{TemplateBinding ActionButtonStyle}"/>
+                            <TextBlock x:Name="MyTitle" Text="{TemplateBinding Title}" FontWeight="SemiBold" Grid.Column="2" TextWrapping ="WrapWholeWords" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                                <Button Name="AlternateCloseButton" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}">
-                                    <SymbolIcon Symbol="Cancel"/>
-                                </Button>
-                                <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}" />
+                            <ScrollViewer Grid.Column="3" VerticalAlignment="Center">
+                                <ContentPresenter x:Name="MyMessage" Content="{TemplateBinding Message}" TextWrapping="WrapWholeWords" />
+                            </ScrollViewer>
+                                
+                            
+                            <Button Name="ActionButton" Content="{TemplateBinding ActionButtonContent}" Command="{TemplateBinding ActionButtonCommand}" Style="{TemplateBinding ActionButtonStyle}" HorizontalAlignment ="Stretch" Grid.Column="4"/>
+                            
+                            <Button Name="AlternateCloseButton" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}" Grid.Column="5">
+                                <SymbolIcon Symbol="Cancel"/>
+                            </Button>
+                            <Button Name="CloseButton" Content ="{TemplateBinding CloseButtonContent}" Command="{TemplateBinding CloseButtonCommand}" CommandParameter="{TemplateBinding CloseButtonCommandParameter}" Style="{TemplateBinding CloseButtonStyle}" HorizontalAlignment ="Stretch" Grid.Column="5"/>
 
-                            </StackPanel>
+                            
                             
 
                         </Grid>
