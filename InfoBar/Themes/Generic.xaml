@@ -117,9 +117,18 @@
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
-
-
-
+                            <VisualStateGroup x:Name="InfoBarVisibility">
+                                <VisualState x:Name="Visible">
+                                    <VisualState.Setters>
+                                        <Setter Target="Container.Visibility" Value="Visible"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Collapsed">
+                                    <VisualState.Setters>
+                                        <Setter Target="Container.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="ContentRootGrid" >
 

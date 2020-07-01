@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using InfoBar;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Documents;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI;
 using System.Windows.Input;
 using Windows.Foundation;
-using Windows.UI.Composition;
 
 namespace InfoBar
 {
@@ -66,14 +56,13 @@ namespace InfoBar
         Button _closeButton;
         Border _myBorder;
 
-
-
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
-        public event EventHandler<InfoBarEventArgs> CloseButtonClick;
+        public event TypedEventHandler<InfoBar, InfoBarEventArgs> CloseButtonClick;
         public event TypedEventHandler<InfoBar, InfoBarClosedEventArgs> Closed;
         public event TypedEventHandler<InfoBar, InfoBarClosingEventArgs> Closing;
 
         private InfoBarCloseReason lastCloseReason = InfoBarCloseReason.Programattic;
+        private bool alreadyRaised = false;
 
 
         public InfoBar()
@@ -317,21 +306,20 @@ namespace InfoBar
 
 
 
-        // Event handlers for Close Button and Action Button
+        // Methods that invoke the event handlers for Close Button and Action Button
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
 
             lastCloseReason = InfoBarCloseReason.CloseButton;
-            InfoBarEventArgs newE = new InfoBarEventArgs();
+            InfoBarEventArgs args = new InfoBarEventArgs();
             if (CloseButtonClick != null)
             {
-                CloseButtonClick.Invoke(this, newE);
+                CloseButtonClick.Invoke(this, args);
             }
-            if (newE.IsHandled == false)
+            if (args.IsHandled == false)
             {
                 RaiseClosingEvent();
-                Open(IsOpen);
-                RaiseClosedEvent();
+                alreadyRaised = false;
             }
 
         }
@@ -349,8 +337,10 @@ namespace InfoBar
 
             if (!args.Cancel)
             {
-                _myBorder.Visibility = Visibility.Collapsed;
-                IsOpen = false;
+                alreadyRaised = true;
+                IsOpen = false; 
+                Open(IsOpen);
+                RaiseClosedEvent();
             }
             else
             {
@@ -358,6 +348,8 @@ namespace InfoBar
                 // closing of this tip, so we need to revert the IsOpen property to true.
                 IsOpen = true;
             }
+
+            
 
 
         }
@@ -451,37 +443,37 @@ namespace InfoBar
         // Updates if InfoBar is opened
         void OnIsOpenChanged()
         {
+
             if (IsOpen)
             {
                 lastCloseReason = InfoBarCloseReason.Programattic;
+                Open(IsOpen);
 
             }
-            else
+            else if (!alreadyRaised)
             {
+
                 RaiseClosingEvent();
-                RaiseClosedEvent();
             }
-            Open(IsOpen);
+            
         }
 
 
         // Opens or closes the InfoBar
         private void Open(bool value)
         {
-            if (_myBorder != null)
-            {
 
-                if (value)
-                {
-                    _myBorder.Visibility = Visibility.Visible;
-                    IsOpen = true;
-                }
-                else
-                {
-                    _myBorder.Visibility = Visibility.Collapsed;
-                    IsOpen = false;
-                }
+            if (value)
+            {
+                VisualStateManager.GoToState(this, "Visible", false);
+                IsOpen = true;
             }
+            else
+            {
+                VisualStateManager.GoToState(this, "Collapsed", false);
+                IsOpen = false;
+            }
+
         }
 
 
@@ -492,7 +484,7 @@ namespace InfoBar
         }
 
        
-        //Updates the StatusColor to the user's chosen color
+        // Updates the StatusColor to the user's chosen color
         void OnStatusColorChanged()
         {
             VisualStateManager.GoToState(this, "UserStatusColor", false);
