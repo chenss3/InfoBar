@@ -14,7 +14,7 @@
             <RowDefinition Height="3*"/>
             
         </Grid.RowDefinitions>
-        <local:InfoBar x:Name="Test" Title="Error" Message="Your program has an error" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity ="Critical" Closed="Test_Closed" Closing="Test_Closing">
+        <local:InfoBar x:Name="Test" Title="Error" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity ="Critical" Closed="Test_Closed" Closing="Test_Closing" Width="1000" Height="100">
             <!--<local:InfoBar.IconSource>
                 <SymbolIconSource Symbol="CellPhone"/>
             </local:InfoBar.IconSource>-->
@@ -94,11 +94,18 @@
                 </ComboBox>
                 <Button x:Name="ActionButtonContentButton" Click="ActionButtonContent_Click" Content="Set" VerticalAlignment="Top"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="7">
-                <TextBlock>Open</TextBlock>
-                <CheckBox Name="IsOpen" Content="IsOpen" Checked="IsOpen_Checked" Unchecked="IsOpen_Unchecked"/>
-                <Button x:Name="IsOpenButton" Click="IsOpenButton_Click" Content="Set"/>
-            </StackPanel>
+            <Grid Grid.Row="7">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Open</TextBlock>
+                    <CheckBox Name="IsOpen" Content="IsOpen" Checked="IsOpen_Checked" Unchecked="IsOpen_Unchecked"/>
+                    <Button x:Name="IsOpenButton" Click="IsOpenButton_Click" Content="Set"/>
+                </StackPanel>
+                
+            </Grid>
         </Grid>
 
     </Grid>

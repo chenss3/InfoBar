@@ -37,15 +37,13 @@ namespace InfoBar
 
         private async void Test_CloseButtonClick(object sender, InfoBarEventArgs e)
         {
-            e.IsHandled = true;
             await new MessageDialog("Thank you, mate").ShowAsync();
         }
 
         private async void Test_Closing(InfoBar sender, InfoBarClosingEventArgs args)
         {
-            args.Cancel = true;
 
-            await new MessageDialog("Thank you, mate im closing").ShowAsync();
+            await new MessageDialog("Thank you, mate im closing").ShowAsync(); //remove async stuff and msgdialog, a condition w/ args.cancel (checkbox) 
         }
 
         private async void Test_Closed(InfoBar sender, InfoBarClosedEventArgs args)
@@ -126,7 +124,7 @@ namespace InfoBar
                     title = "Long Title. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
                     break;
                 case "No Title":
-                    title = "";
+                    title = null;
                     break;
             }
         }
@@ -149,7 +147,7 @@ namespace InfoBar
                     message = "Long Message. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.";
                     break;
                 case "No Message":
-                    message = "";
+                    message = null;
                     break;
             }
         }
@@ -172,7 +170,7 @@ namespace InfoBar
                     closeButtonContent = "C:LongTextLorem ipsum dolor sit amet.";
                     break;
                 case "No Text":
-                    closeButtonContent = "";
+                    closeButtonContent = null;
                     break;
             }
         }
@@ -195,7 +193,7 @@ namespace InfoBar
                     actionButtonContent = "A:LongTextLorem ipsum dolor sit amet.";
                     break;
                 case "No Text":
-                    actionButtonContent = "";
+                    actionButtonContent = null;
                     break;
             }
         }

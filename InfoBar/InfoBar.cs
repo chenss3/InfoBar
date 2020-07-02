@@ -54,7 +54,7 @@ namespace InfoBar
         Button _actionButton;
         Button _alternateCloseButton;
         Button _closeButton;
-        Border _myBorder;
+        Border _myContainer;
 
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
         public event TypedEventHandler<InfoBar, InfoBarEventArgs> CloseButtonClick;
@@ -74,10 +74,6 @@ namespace InfoBar
         T GetTemplateChild<T>(string name) where T : DependencyObject
         {
             var child = GetTemplateChild(name) as T;
-            if (child == null)
-            {
-                throw new NullReferenceException(name);
-            }
             return child;
         }
 
@@ -87,7 +83,7 @@ namespace InfoBar
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
             _closeButton = GetTemplateChild<Button>("CloseButton");
             _actionButton = GetTemplateChild<Button>("ActionButton");
-            _myBorder = GetTemplateChild<Border>("Container");
+            _myContainer = GetTemplateChild<Border>("Container");
 
 
             UpdateButtonsState();
@@ -312,10 +308,7 @@ namespace InfoBar
 
             lastCloseReason = InfoBarCloseReason.CloseButton;
             InfoBarEventArgs args = new InfoBarEventArgs();
-            if (CloseButtonClick != null)
-            {
-                CloseButtonClick.Invoke(this, args);
-            }
+            CloseButtonClick?.Invoke(this, args);
             if (args.IsHandled == false)
             {
                 RaiseClosingEvent();
@@ -330,10 +323,7 @@ namespace InfoBar
             InfoBarClosingEventArgs args = new InfoBarClosingEventArgs();
             args.Reason = lastCloseReason;
 
-            if (Closing != null)
-            {
-                Closing.Invoke(this, args);
-            }
+            Closing?.Invoke(this, args);
 
             if (!args.Cancel)
             {
@@ -348,10 +338,6 @@ namespace InfoBar
                 // closing of this tip, so we need to revert the IsOpen property to true.
                 IsOpen = true;
             }
-
-            
-
-
         }
 
 
@@ -359,10 +345,7 @@ namespace InfoBar
         {
             InfoBarClosedEventArgs args = new InfoBarClosedEventArgs();
             args.Reason = lastCloseReason;
-            if (Closed != null)
-            {
-                Closed.Invoke(this, args);
-            }
+            Closed?.Invoke(this, args);
 
         }
 
@@ -394,6 +377,7 @@ namespace InfoBar
             else
             {
                 VisualStateManager.GoToState(this, "Default", false);
+                StatusColor = Color.FromArgb(255, 105, 121, 126);
             }
         }
 
@@ -417,11 +401,15 @@ namespace InfoBar
                 {
                     VisualStateManager.GoToState(this, "ActionButtonVisible", false);
                     VisualStateManager.GoToState(this, "DefaultCloseButton", false);
+                    _alternateCloseButton.Visibility = Visibility.Visible;
                 }
                 else if (ActionButtonContent == null && CloseButtonContent == null)
                 {
                     VisualStateManager.GoToState(this, "NoButtonsVisible", false);
                     VisualStateManager.GoToState(this, "DefaultCloseButton", false);
+                    _closeButton.Visibility = Visibility.Collapsed;
+                    _actionButton.Visibility = Visibility.Collapsed;
+                    _alternateCloseButton.Visibility = Visibility.Visible;
                 }
             }
             else
