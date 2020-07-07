@@ -14,10 +14,10 @@
             <RowDefinition Height="3*"/>
             
         </Grid.RowDefinitions>
-        <local:InfoBar x:Name="Test" Title="Error" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity ="Critical" Closed="Test_Closed" Closing="Test_Closing" Width="1000" Height="100">
-            <!--<local:InfoBar.IconSource>
+        <local:InfoBar x:Name="Test" StatusColor ="Pink" Title="Error" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Closing="Test_Closing" Severity = "Critical" Width="1000" Height="100">
+            <local:InfoBar.IconSource>
                 <SymbolIconSource Symbol="CellPhone"/>
-            </local:InfoBar.IconSource>-->
+            </local:InfoBar.IconSource>
         </local:InfoBar>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -76,15 +76,26 @@
                 </ComboBox>
                 <Button x:Name="MessageButton" Click="MessageButton_Click" Content="Set" VerticalAlignment="Top"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Row="5">
-                <TextBlock>Close Button Content</TextBlock>
-                <ComboBox x:Name="CloseButtonContentComboBox" SelectionChanged="CloseButtonContentComboBox_SelectionChanged">
-                    <x:String>Short Text</x:String>
-                    <x:String>Long Text</x:String>
-                    <x:String>No Text</x:String>
-                </ComboBox>
-                <Button x:Name="CloseButtonContentButton" Click="CloseButtonContent_Click" Content="Set" VerticalAlignment="Top"/>
-            </StackPanel>
+            <Grid Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" Grid.Row="5">
+                    <TextBlock>Close Button Content</TextBlock>
+                    <ComboBox x:Name="CloseButtonContentComboBox" SelectionChanged="CloseButtonContentComboBox_SelectionChanged">
+                        <x:String>Short Text</x:String>
+                        <x:String>Long Text</x:String>
+                        <x:String>No Text</x:String>
+                    </ComboBox>
+                    <Button x:Name="CloseButtonContentButton" Click="CloseButtonContent_Click" Content="Set" VerticalAlignment="Top"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Grid.Column="1">
+                    <TextBlock>Show Close Button</TextBlock>
+                    <CheckBox Name="ShowClose" Content="Show Close" Checked="ShowClose_Checked" Unchecked="ShowClose_Unchecked"/>
+                    <Button x:Name="ShowCloseButton" Click="ShowCloseButton_Click" Content="Set"/>
+                </StackPanel>
+            </Grid>
             <StackPanel Orientation="Horizontal" Grid.Row="6">
                 <TextBlock>Action Button Content</TextBlock>
                 <ComboBox x:Name="ActionButtonContentComboBox" SelectionChanged="ActionButtonContentComboBox_SelectionChanged">
@@ -104,7 +115,10 @@
                     <CheckBox Name="IsOpen" Content="IsOpen" Checked="IsOpen_Checked" Unchecked="IsOpen_Unchecked"/>
                     <Button x:Name="IsOpenButton" Click="IsOpenButton_Click" Content="Set"/>
                 </StackPanel>
-                
+                <StackPanel Orientation = "Horizontal" Grid.Column="1">
+                    <TextBlock>Cancel Closing</TextBlock>
+                    <CheckBox Name="Cancel" Content="Cancel" Checked="Cancel_Checked" Unchecked="Cancel_Unchecked"/>
+                </StackPanel>
             </Grid>
         </Grid>
 
