@@ -12,10 +12,9 @@ namespace InfoBar
         CloseButton,
         Programattic
     }
-
     public enum InfoBarSeverity
     {
-        Critical,
+        Critical, 
         Warning,
         Informational,
         Success,
@@ -30,17 +29,18 @@ namespace InfoBar
             get; set;
         }
     }
-
+    
     public class InfoBarClosingEventArgs : EventArgs
     {
-        public InfoBarCloseReason Reason
+        public InfoBarCloseReason Reason 
         {
             get; set;
         }
         public bool Cancel
         {
-            get; set;
+            get; set; 
         }
+        
     }
     public class InfoBarEventArgs : EventArgs
     {
@@ -49,13 +49,11 @@ namespace InfoBar
             get; set;
         }
     }
-
     public sealed class InfoBar : ContentControl
     {
         Button _actionButton;
         Button _alternateCloseButton;
         Button _closeButton;
-        Border _myContainer;
 
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
         public event TypedEventHandler<InfoBar, InfoBarEventArgs> CloseButtonClick;
@@ -65,10 +63,12 @@ namespace InfoBar
         private InfoBarCloseReason lastCloseReason = InfoBarCloseReason.Programattic;
         private bool alreadyRaised = false;
 
+
         public InfoBar()
         {
             this.DefaultStyleKey = typeof(InfoBar);
         }
+
 
         T GetTemplateChild<T>(string name) where T : DependencyObject
         {
@@ -76,21 +76,34 @@ namespace InfoBar
             return child;
         }
 
+
         protected override void OnApplyTemplate()
         {
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
             _closeButton = GetTemplateChild<Button>("CloseButton");
             _actionButton = GetTemplateChild<Button>("ActionButton");
-            _myContainer = GetTemplateChild<Border>("Container");
+
 
             UpdateButtonsState();
             UpdateSeverityState();
             OnIsOpenChanged();
 
+        /*    // Allows the user to override the default StatusColor and Icon of the Severity level
+            if(IconSource != null)
+            {
+                OnIconSourceChanged();
+            }
+            if (StatusColor != Color.FromArgb(0, 0 , 0, 0))
+            {
+                OnStatusColorChanged();
+
+            }*/
+
             _alternateCloseButton.Click += new RoutedEventHandler(OnCloseButtonClick);
             _closeButton.Click += new RoutedEventHandler(OnCloseButtonClick);
             _actionButton.Click += (s, e) => ActionButtonClick?.Invoke(s, e);
         }
+
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -107,12 +120,13 @@ namespace InfoBar
             else if (property == IsOpenProperty)
             {
                 infoBar.OnIsOpenChanged();
-            }
-            else if (property == IconSourceProperty)
+            } else if (property == IconSourceProperty)
             {
                 infoBar.OnIconChanged();
             }
         }
+
+
 
         /* Open Properties
          * 
@@ -126,6 +140,7 @@ namespace InfoBar
         public static readonly DependencyProperty IsOpenProperty =
             DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(InfoBar), new PropertyMetadata(false, OnPropertyChanged));
 
+
         public bool ShowCloseButton
         {
             get { return (bool)GetValue(ShowCloseButtonProperty); }
@@ -134,6 +149,9 @@ namespace InfoBar
 
         public static readonly DependencyProperty ShowCloseButtonProperty =
             DependencyProperty.Register(nameof(ShowCloseButton), typeof(bool), typeof(InfoBar), new PropertyMetadata(true, OnPropertyChanged));
+
+
+
 
         /* Message Title Properties
          * 
@@ -147,6 +165,7 @@ namespace InfoBar
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(nameof(Title), typeof(string), typeof(InfoBar), new PropertyMetadata(""));
 
+
         public string Message
         {
             get { return (string)GetValue(MessageProperty); }
@@ -155,6 +174,9 @@ namespace InfoBar
 
         public static readonly DependencyProperty MessageProperty =
             DependencyProperty.Register(nameof(Message), typeof(string), typeof(InfoBar), new PropertyMetadata(""));
+
+
+
 
         /* Action Button Properties
          * 
@@ -168,6 +190,7 @@ namespace InfoBar
         public static readonly DependencyProperty ActionButtonContentProperty =
             DependencyProperty.Register(nameof(ActionButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null, OnPropertyChanged));
 
+
         public Style ActionButtonStyle
         {
             get { return (Style)GetValue(ActionButtonStyleProperty); }
@@ -176,6 +199,7 @@ namespace InfoBar
 
         public static readonly DependencyProperty ActionButtonStyleProperty =
             DependencyProperty.Register(nameof(ActionButtonStyle), typeof(Style), typeof(InfoBar), new PropertyMetadata(null));
+
 
         public ICommand ActionButtonCommand
         {
@@ -186,6 +210,7 @@ namespace InfoBar
         public static readonly DependencyProperty ActionButtonCommandProperty =
             DependencyProperty.Register(nameof(ActionButtonCommand), typeof(ICommand), typeof(InfoBar), new PropertyMetadata(null));
 
+
         public object ActionButtonCommandParameter
         {
             get { return (object)GetValue(ActionButtonCommandParameterProperty); }
@@ -194,6 +219,10 @@ namespace InfoBar
 
         public static readonly DependencyProperty ActionButtonCommandParameterProperty =
             DependencyProperty.Register(nameof(ActionButtonCommandParameter), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+
+
+
+
 
         /* Close Button Properties
          * 
@@ -216,6 +245,7 @@ namespace InfoBar
         public static readonly DependencyProperty CloseButtonStyleProperty =
             DependencyProperty.Register(nameof(CloseButtonStyle), typeof(Style), typeof(InfoBar), new PropertyMetadata(null));
 
+
         public ICommand CloseButtonCommand
         {
             get { return (ICommand)GetValue(CloseButtonCommandProperty); }
@@ -224,6 +254,7 @@ namespace InfoBar
 
         public static readonly DependencyProperty CloseButtonCommandProperty =
             DependencyProperty.Register(nameof(CloseButtonCommand), typeof(ICommand), typeof(InfoBar), new PropertyMetadata(null));
+
 
         public object CloseButtonCommandParameter
         {
@@ -234,9 +265,12 @@ namespace InfoBar
         public static readonly DependencyProperty CloseButtonCommandParameterProperty =
             DependencyProperty.Register(nameof(CloseButtonCommandParameter), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
 
-        /* Severity-Related Properties
-        * 
-        */
+
+
+
+         /* Severity-Related Properties
+         * 
+         */
         public InfoBarSeverity Severity
         {
             get { return (InfoBarSeverity)GetValue(SeverityProperty); }
@@ -255,6 +289,7 @@ namespace InfoBar
         public static readonly DependencyProperty StatusColorProperty =
             DependencyProperty.Register(nameof(StatusColor), typeof(Color), typeof(InfoBar), new PropertyMetadata(Color.FromArgb(0, 0, 0, 0)));
 
+
         public IconSource IconSource
         {
             get { return (IconSource)GetValue(IconSourceProperty); }
@@ -262,21 +297,25 @@ namespace InfoBar
         }
 
         public static readonly DependencyProperty IconSourceProperty =
-            DependencyProperty.Register(nameof(IconSource), typeof(IconSource), typeof(InfoBar), new PropertyMetadata(default));
+            DependencyProperty.Register(nameof(IconSource), typeof(IconSource), typeof(InfoBar), new PropertyMetadata(default, OnPropertyChanged));
+
+
 
         // Methods that invoke the event handlers for Close Button and Action Button
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
+
             lastCloseReason = InfoBarCloseReason.CloseButton;
             InfoBarEventArgs args = new InfoBarEventArgs();
             CloseButtonClick?.Invoke(this, args);
-            //If the user sets IsHandled to true, they can override the behavior of CloseButtonClick
             if (args.IsHandled == false)
             {
                 RaiseClosingEvent();
                 alreadyRaised = false;
             }
+
         }
+
 
         void RaiseClosingEvent()
         {
@@ -284,12 +323,11 @@ namespace InfoBar
             args.Reason = lastCloseReason;
 
             Closing?.Invoke(this, args);
-            // If the developer did not want to cancel the closing of the InfoBar, the InfoBar will collapse and the ClosedEvent will proceed as usual. 
+
             if (!args.Cancel)
             {
                 alreadyRaised = true;
-                _myContainer.Visibility = Visibility.Collapsed;
-                IsOpen = false;
+                IsOpen = false; 
                 Open(IsOpen);
                 RaiseClosedEvent();
             }
@@ -300,11 +338,14 @@ namespace InfoBar
                 IsOpen = true;
             }
         }
+
+
         void RaiseClosedEvent()
         {
             InfoBarClosedEventArgs args = new InfoBarClosedEventArgs();
             args.Reason = lastCloseReason;
             Closed?.Invoke(this, args);
+
         }
 
         void OnIconChanged()
@@ -312,8 +353,7 @@ namespace InfoBar
             if (IconSource != null)
             {
                 VisualStateManager.GoToState(this, "UserIconVisible", false);
-            }
-            else
+            } else
             {
                 VisualStateManager.GoToState(this, "StandardIconVisible", false);
             }
@@ -348,6 +388,7 @@ namespace InfoBar
                 VisualStateManager.GoToState(this, "Default", false);
             }
         }
+
 
         // Updates visibility of buttons
         void UpdateButtonsState()
@@ -385,6 +426,7 @@ namespace InfoBar
                 if (ActionButtonContent != null)
                 {
                     VisualStateManager.GoToState(this, "ActionButtonVisible", false);
+
                 }
                 else
                 {
@@ -393,24 +435,31 @@ namespace InfoBar
             }
         }
 
+
         // Updates if InfoBar is opened
         void OnIsOpenChanged()
         {
+
             if (IsOpen)
             {
                 lastCloseReason = InfoBarCloseReason.Programattic;
                 Open(IsOpen);
+
             }
             else if (!alreadyRaised)
             {
+
                 RaiseClosingEvent();
                 alreadyRaised = false;
             }
+            
         }
+
 
         // Opens or closes the InfoBar
         private void Open(bool value)
         {
+
             if (value)
             {
                 VisualStateManager.GoToState(this, "Visible", false);
@@ -419,9 +468,9 @@ namespace InfoBar
             else
             {
                 VisualStateManager.GoToState(this, "Collapsed", false);
-                _myContainer.Visibility = Visibility.Collapsed;
                 IsOpen = false;
             }
+
         }
     }
 }

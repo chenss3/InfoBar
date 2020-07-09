@@ -15,9 +15,9 @@
             
         </Grid.RowDefinitions>
         <local:InfoBar x:Name="Test" StatusColor ="Pink" Title="Error" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Closing="Test_Closing" Severity = "Critical" Width="1000" Height="100">
-            <local:InfoBar.IconSource>
+            <!--<local:InfoBar.IconSource>
                 <SymbolIconSource Symbol="CellPhone"/>
-            </local:InfoBar.IconSource>
+            </local:InfoBar.IconSource>-->
         </local:InfoBar>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -121,6 +121,5 @@
                 </StackPanel>
             </Grid>
         </Grid>
-
     </Grid>
 </Page>
