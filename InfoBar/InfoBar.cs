@@ -1,9 +1,23 @@
-﻿using System;
+﻿/* 
+ * InfoBar Contorl Prototype
+ * @author Sophia Chen
+ * t-soc@microsoft.com
+ * 
+ * C# Prototype for UWP InfoBar (Microsoft XAML Controls Team)
+ * 
+ */
+
+using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI;
 using System.Windows.Input;
 using Windows.Foundation;
+using Windows.UI.Xaml.Controls.Primitives;
+using System.Runtime.CompilerServices;
+using Windows.UI.Xaml.Automation.Peers;
+using Windows.ApplicationModel;
+using System.ServiceModel.Channels;
 
 namespace InfoBar
 {
@@ -42,7 +56,7 @@ namespace InfoBar
         }
         
     }
-    public class InfoBarEventArgs : EventArgs
+    public class CloseButtonClickEventArgs : EventArgs
     {
         public bool IsHandled
         {
@@ -56,12 +70,13 @@ namespace InfoBar
         Button _closeButton;
 
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
-        public event TypedEventHandler<InfoBar, InfoBarEventArgs> CloseButtonClick;
+        public event TypedEventHandler<InfoBar, CloseButtonClickEventArgs> CloseButtonClick;
         public event TypedEventHandler<InfoBar, InfoBarClosedEventArgs> Closed;
         public event TypedEventHandler<InfoBar, InfoBarClosingEventArgs> Closing;
 
         private InfoBarCloseReason lastCloseReason = InfoBarCloseReason.Programattic;
         private bool alreadyRaised = false;
+        private Popup pop;
 
 
         public InfoBar()
@@ -79,31 +94,25 @@ namespace InfoBar
 
         protected override void OnApplyTemplate()
         {
+            Window.Current.SizeChanged += Current_SizeChanged;
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
             _closeButton = GetTemplateChild<Button>("CloseButton");
             _actionButton = GetTemplateChild<Button>("ActionButton");
 
-
             UpdateButtonsState();
             UpdateSeverityState();
             OnIsOpenChanged();
-
-        /*    // Allows the user to override the default StatusColor and Icon of the Severity level
-            if(IconSource != null)
-            {
-                OnIconSourceChanged();
-            }
-            if (StatusColor != Color.FromArgb(0, 0 , 0, 0))
-            {
-                OnStatusColorChanged();
-
-            }*/
+            OnTitleChanged();
 
             _alternateCloseButton.Click += new RoutedEventHandler(OnCloseButtonClick);
             _closeButton.Click += new RoutedEventHandler(OnCloseButtonClick);
             _actionButton.Click += (s, e) => ActionButtonClick?.Invoke(s, e);
         }
 
+        private void Current_SizeChanged(object sender, Windows.UI.Core.WindowSizeChangedEventArgs e)
+        {
+            OnToastChanged();
+        }
 
         private static void OnPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -120,13 +129,44 @@ namespace InfoBar
             else if (property == IsOpenProperty)
             {
                 infoBar.OnIsOpenChanged();
-            } else if (property == IconSourceProperty)
+            }
+            else if (property == IconSourceProperty)
             {
                 infoBar.OnIconChanged();
             }
+            else if (property == ContentProperty)
+            {
+                infoBar.OnContentChanged();
+            } 
+            else if (property == TitleProperty)
+            {
+                infoBar.OnTitleChanged();
+            }
         }
 
+        private void OnTitleChanged()
+        {
+            if (Title != "" && Title != null)
+            {
+                VisualStateManager.GoToState(this, "TitlePresent", false);
+            } 
+            else
+            {
+                VisualStateManager.GoToState(this, "TitleNotPresent", false);
+            }
+        }
 
+        private void OnContentChanged()
+        {
+            if(Content != null)
+            {
+                VisualStateManager.GoToState(this, "Content", false);
+            }
+            else
+            {
+                VisualStateManager.GoToState(this, "NoContent", false);
+            }
+        }
 
         /* Open Properties
          * 
@@ -163,7 +203,7 @@ namespace InfoBar
         }
 
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(nameof(Title), typeof(string), typeof(InfoBar), new PropertyMetadata(""));
+            DependencyProperty.Register(nameof(Title), typeof(string), typeof(InfoBar), new PropertyMetadata("", OnPropertyChanged));
 
 
         public string Message
@@ -301,12 +341,29 @@ namespace InfoBar
 
 
 
+
+        public bool Toast
+        {
+            get { return (bool)GetValue(ToastProperty); }
+            set { SetValue(ToastProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Toast.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ToastProperty =
+            DependencyProperty.Register(nameof(Toast), typeof(bool), typeof(InfoBar), new PropertyMetadata(false));
+
+
+
+
+
+
+
         // Methods that invoke the event handlers for Close Button and Action Button
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
 
             lastCloseReason = InfoBarCloseReason.CloseButton;
-            InfoBarEventArgs args = new InfoBarEventArgs();
+            CloseButtonClickEventArgs args = new CloseButtonClickEventArgs();
             CloseButtonClick?.Invoke(this, args);
             if (args.IsHandled == false)
             {
@@ -329,7 +386,6 @@ namespace InfoBar
                 alreadyRaised = true;
                 IsOpen = false; 
                 Open(IsOpen);
-                RaiseClosedEvent();
             }
             else
             {
@@ -409,7 +465,11 @@ namespace InfoBar
                 {
                     VisualStateManager.GoToState(this, "ActionButtonVisible", false);
                     VisualStateManager.GoToState(this, "DefaultCloseButton", false);
-                    _alternateCloseButton.Visibility = Visibility.Visible;
+                    if(_alternateCloseButton != null)
+                    {
+                        _alternateCloseButton.Visibility = Visibility.Visible;
+                    }
+                    
                 }
                 else if (ActionButtonContent == null && CloseButtonContent == null)
                 {
@@ -453,6 +513,7 @@ namespace InfoBar
                 alreadyRaised = false;
             }
             
+            
         }
 
 
@@ -469,8 +530,85 @@ namespace InfoBar
             {
                 VisualStateManager.GoToState(this, "Collapsed", false);
                 IsOpen = false;
+                RaiseClosedEvent();
+            }
+            OnToastChanged();
+            /*
+            InfoBarAutomationPeer infoBarPeer = FrameworkElementAutomationPeer.FromElement(this) as InfoBarAutomationPeer ?? null;
+            if (infoBarPeer != null)
+            {
+                string notificationString = getNotificationString();
+            }
+            */
+        }
+
+        private string getAppName()
+        {
+            try
+            {
+                var package = Package.Current ?? null;
+                if (package != null)
+                {
+                    return package.DisplayName;
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+       /* private string getNotificationString()
+        {
+            string appName = getAppName();
+            if (!String.IsNullOrEmpty(appName))
+            {
+                return String.Format(GetLocalizedStringResources)
+            }
+        } */
+
+        void OnToastChanged()
+        {
+            if (Toast)
+            {
+                InfoBar bar = this;
+                ShowAsToast(bar);
+            }
+        }
+
+        static void ShowAsToast(InfoBar bar)
+        { 
+            VisualStateManager.GoToState(bar, "InfoBarFloatingSize", false);
+            var parent = bar.Parent as Grid;
+            if (bar.pop == null)
+            {
+                bar.pop = new Popup();
             }
 
+            double wid = ((Frame)Window.Current.Content).ActualWidth;
+            double hei = ((Frame)Window.Current.Content).ActualHeight;
+
+            double barHeight = bar.ActualHeight;
+            double barWidth = bar.ActualWidth;
+            bar.pop.VerticalOffset = (hei - barHeight);
+            bar.pop.HorizontalOffset = (wid - barWidth);
+            if (parent != null)
+            {
+                parent.Children.Remove(bar);
+                bar.pop.Child = bar; 
+                if (bar.IsOpen)
+                {
+                    bar.pop.IsOpen = true;
+                } else
+                {
+                    bar.pop.IsOpen = false;
+                }
+            } 
         }
+
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new InfoBarAutomationPeer(this);
+        }
+
     }
 }

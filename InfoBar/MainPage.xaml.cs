@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Runtime.ConstrainedExecution;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Text.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -23,19 +25,18 @@ namespace InfoBar
         bool cancel;
         bool showClose;
 
-
-
         public MainPage()
         {
             this.InitializeComponent();
         }
+
 
         private async void Test_ActionButtonClick(object sender, RoutedEventArgs e)
         {
             await new MessageDialog("Thank you, mate").ShowAsync();
         }
 
-        private async void Test_CloseButtonClick(object sender, InfoBarEventArgs e)
+        private async void Test_CloseButtonClick(object sender, CloseButtonClickEventArgs e)
         {
             await new MessageDialog("Thank you, mate").ShowAsync();
         }
@@ -47,7 +48,6 @@ namespace InfoBar
 
         private async void Test_Closed(InfoBar sender, InfoBarClosedEventArgs args)
         {
-
             await new MessageDialog("Thank you, mate im closed").ShowAsync();
         }
 
@@ -261,5 +261,6 @@ namespace InfoBar
         {
             Test.ShowCloseButton = showClose;
         }
+
     }
 }

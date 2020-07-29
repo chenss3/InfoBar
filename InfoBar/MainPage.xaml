@@ -14,10 +14,13 @@
             <RowDefinition Height="3*"/>
             
         </Grid.RowDefinitions>
-        <local:InfoBar x:Name="Test" StatusColor ="Pink" Title="Error" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Closing="Test_Closing" Severity = "Critical" Width="1000" Height="100">
+        <local:InfoBar x:Name="Test" Title="Error While Saving" Message="Your document was unable to be saved." Width="800" CloseButtonContent="Got it" ActionButtonContent="Go Here" HorizontalAlignment="Left" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity = "Critical" Toast="False" Closing="Test_Closing">
             <!--<local:InfoBar.IconSource>
                 <SymbolIconSource Symbol="CellPhone"/>
             </local:InfoBar.IconSource>-->
+            <!--<local:InfoBar.Content>
+                <TextBlock>Hello</TextBlock>
+            </local:InfoBar.Content> -->
         </local:InfoBar>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
