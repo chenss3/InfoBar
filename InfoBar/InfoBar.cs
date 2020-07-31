@@ -18,6 +18,7 @@ using System.Runtime.CompilerServices;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.ApplicationModel;
 using System.ServiceModel.Channels;
+using Windows.UI.Xaml.Documents;
 
 namespace InfoBar
 {
@@ -67,7 +68,12 @@ namespace InfoBar
     {
         Button _actionButton;
         Button _alternateCloseButton;
-        Button _closeButton;
+        TextBlock _title;
+        TextBlock _message;
+        HyperlinkButton _hyperlinkButton;
+        IconSourceElement _standardIcon;
+        IconSourceElement _userIcon;
+        Grid _contentRootGrid;
 
         public event EventHandler<RoutedEventArgs> ActionButtonClick;
         public event TypedEventHandler<InfoBar, CloseButtonClickEventArgs> CloseButtonClick;
@@ -96,16 +102,20 @@ namespace InfoBar
         {
             Window.Current.SizeChanged += Current_SizeChanged;
             _alternateCloseButton = GetTemplateChild<Button>("AlternateCloseButton");
-            _closeButton = GetTemplateChild<Button>("CloseButton");
             _actionButton = GetTemplateChild<Button>("ActionButton");
+            _title = GetTemplateChild<TextBlock>("Title");
+            _message = GetTemplateChild<TextBlock>("Message");
+            _hyperlinkButton = GetTemplateChild<HyperlinkButton>("HyperlinkButton");
+            _standardIcon = GetTemplateChild<IconSourceElement>("StandardIcon");
+            _userIcon = GetTemplateChild<IconSourceElement>("UserIcon");
+            _contentRootGrid = GetTemplateChild<Grid>("ContentRootGrid");
 
             UpdateButtonsState();
             UpdateSeverityState();
             OnIsOpenChanged();
-            OnTitleChanged();
+            UpdateMargins();
 
             _alternateCloseButton.Click += new RoutedEventHandler(OnCloseButtonClick);
-            _closeButton.Click += new RoutedEventHandler(OnCloseButtonClick);
             _actionButton.Click += (s, e) => ActionButtonClick?.Invoke(s, e);
         }
 
@@ -122,7 +132,7 @@ namespace InfoBar
             {
                 infoBar.UpdateSeverityState();
             }
-            else if (property == ActionButtonContentProperty || property == CloseButtonContentProperty || property == ShowCloseButtonProperty)
+            else if (property == ActionButtonContentProperty || property == ShowCloseButtonProperty)
             {
                 infoBar.UpdateButtonsState();
             }
@@ -134,39 +144,113 @@ namespace InfoBar
             {
                 infoBar.OnIconChanged();
             }
-            else if (property == ContentProperty)
+            else if (property == MessageProperty)
             {
-                infoBar.OnContentChanged();
-            } 
-            else if (property == TitleProperty)
-            {
-                infoBar.OnTitleChanged();
+                infoBar.checkMessage();
             }
+            infoBar.UpdateMargins();
         }
 
-        private void OnTitleChanged()
+        private void UpdateMargins()
         {
-            if (Title != "" && Title != null)
+            if(_standardIcon!= null)
             {
-                VisualStateManager.GoToState(this, "TitlePresent", false);
-            } 
-            else
-            {
-                VisualStateManager.GoToState(this, "TitleNotPresent", false);
+                if ((Title != null && Title != "") || (Message != null && Message != "") || ActionButtonContent != null || HyperlinkButtonContent != null || ShowCloseButton == true)
+                {
+                    _standardIcon.Margin = new Thickness(0, 12, 8, 12);
+                }
+                else
+                {
+                    _standardIcon.Margin = new Thickness(0, 12, 0, 12);
+                }
             }
+
+            if (_userIcon != null)
+            {
+                if ((Title != null && Title != "") || (Message != null && Message != "") || ActionButtonContent != null || HyperlinkButtonContent != null || ShowCloseButton == true)
+                {
+                    _userIcon.Margin = new Thickness(0, 12, 8, 12);
+                }
+                else
+                {
+                    _userIcon.Margin = new Thickness(0, 12, 0, 12);
+                }
+            }
+
+            if(_title != null)
+            {
+                if (Title != null && Title != "")
+                {
+                    if ((_standardIcon != null || _userIcon != null) && (Message != null && Message != ""))
+                    {
+                        _title.Margin = new Thickness(0, 12, 8, 12);
+                    }
+                    else
+                    {
+                        _title.Margin = new Thickness(0, 12, 0, 12);
+                    }
+                } else
+                {
+                    _title.Margin = new Thickness(0, 0, 0, 0);
+                }
+            }
+           
+            if (_message != null)
+            {
+                if (Message != null && Message != "")
+                {
+                    if (ActionButtonContent != null)
+                    {
+                        _message.Margin = new Thickness(0, 12, 12, 12);
+                    }
+                    else
+                    {
+                        _message.Margin = new Thickness(0, 12, 0, 12);
+                    }
+                }
+                else
+                {
+                    _message.Margin = new Thickness(0, 0, 0, 0);
+                }
+            }
+            
+            if(_actionButton != null)
+            {
+                if (ActionButtonContent != null)
+                {
+                    if (HyperlinkButtonContent != null)
+                    {
+                        _actionButton.Margin = new Thickness(0, 8, 12, 8);
+                    }
+                    else
+                    {
+                        _actionButton.Margin = new Thickness(0, 8, 4, 8);
+                    }
+                } else
+                {
+                    _actionButton.Margin = new Thickness(0, 0, 0, 0);
+                }
+            }
+
         }
 
-        private void OnContentChanged()
+        private void checkMessage()
         {
-            if(Content != null)
+            if(_message != null)
             {
-                VisualStateManager.GoToState(this, "Content", false);
+                if (_message.IsTextTrimmed)
+                {
+                    _message.TextWrapping = TextWrapping.WrapWholeWords;
+                    _contentRootGrid.RowDefinitions.Add(new RowDefinition());
+                    _contentRootGrid.RowDefinitions.Add(new RowDefinition());
+                    _contentRootGrid.Children.Add(_message);
+                    Grid.SetRow(_message, 1);
+                    Grid.SetColumn(_message, 1);
+                }
             }
-            else
-            {
-                VisualStateManager.GoToState(this, "NoContent", false);
-            }
+ 
         }
+
 
         /* Open Properties
          * 
@@ -191,8 +275,6 @@ namespace InfoBar
             DependencyProperty.Register(nameof(ShowCloseButton), typeof(bool), typeof(InfoBar), new PropertyMetadata(true, OnPropertyChanged));
 
 
-
-
         /* Message Title Properties
          * 
          */
@@ -213,7 +295,7 @@ namespace InfoBar
         }
 
         public static readonly DependencyProperty MessageProperty =
-            DependencyProperty.Register(nameof(Message), typeof(string), typeof(InfoBar), new PropertyMetadata(""));
+            DependencyProperty.Register(nameof(Message), typeof(string), typeof(InfoBar), new PropertyMetadata("", OnPropertyChanged));
 
 
 
@@ -260,21 +342,9 @@ namespace InfoBar
         public static readonly DependencyProperty ActionButtonCommandParameterProperty =
             DependencyProperty.Register(nameof(ActionButtonCommandParameter), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
 
-
-
-
-
         /* Close Button Properties
          * 
          */
-        public object CloseButtonContent
-        {
-            get { return (object)GetValue(CloseButtonContentProperty); }
-            set { SetValue(CloseButtonContentProperty, value); }
-        }
-
-        public static readonly DependencyProperty CloseButtonContentProperty =
-            DependencyProperty.Register(nameof(CloseButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null, OnPropertyChanged));
 
         public Style CloseButtonStyle
         {
@@ -306,11 +376,32 @@ namespace InfoBar
             DependencyProperty.Register(nameof(CloseButtonCommandParameter), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
 
 
-
-
-         /* Severity-Related Properties
+        /* Hyperlink Properties 
          * 
          */
+        public Object HyperlinkButtonContent
+        {
+            get { return (object)GetValue(HyperlinkButtonContentProperty); }
+            set { SetValue(HyperlinkButtonContentProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HyperlinkButtonContent.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HyperlinkButtonContentProperty =
+            DependencyProperty.Register(nameof(HyperlinkButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
+
+        public Style HyperlinkButtonStyle
+        {
+            get { return (Style)GetValue(HyperlinkButtonStyleProperty); }
+            set { SetValue(HyperlinkButtonStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HyperlinkButtonStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HyperlinkButtonStyleProperty =
+            DependencyProperty.Register(nameof(HyperlinkButtonStyle), typeof(Style), typeof(InfoBar), new PropertyMetadata(null));
+
+        /* Severity-Related Properties
+        * 
+        */
         public InfoBarSeverity Severity
         {
             get { return (InfoBarSeverity)GetValue(SeverityProperty); }
@@ -451,38 +542,32 @@ namespace InfoBar
         {
             if (ShowCloseButton)
             {
-                if (CloseButtonContent != null && ActionButtonContent != null)
+                if (ActionButtonContent != null)
                 {
                     VisualStateManager.GoToState(this, "BothButtonsVisible", false);
-                    VisualStateManager.GoToState(this, "NoDefaultCloseButton", false);
-                }
-                else if (CloseButtonContent != null)
-                {
-                    VisualStateManager.GoToState(this, "CloseButtonVisible", false);
-                    VisualStateManager.GoToState(this, "NoDefaultCloseButton", false);
                 }
                 else if (ActionButtonContent != null)
                 {
                     VisualStateManager.GoToState(this, "ActionButtonVisible", false);
-                    VisualStateManager.GoToState(this, "DefaultCloseButton", false);
                     if(_alternateCloseButton != null)
                     {
                         _alternateCloseButton.Visibility = Visibility.Visible;
                     }
                     
                 }
-                else if (ActionButtonContent == null && CloseButtonContent == null)
+                else if (ActionButtonContent == null)
                 {
                     VisualStateManager.GoToState(this, "NoButtonsVisible", false);
-                    VisualStateManager.GoToState(this, "DefaultCloseButton", false);
-                    _closeButton.Visibility = Visibility.Collapsed;
                     _actionButton.Visibility = Visibility.Collapsed;
                     _alternateCloseButton.Visibility = Visibility.Visible;
+                } 
+                else
+                {
+                    VisualStateManager.GoToState(this, "CloseButtonVisible", false);
                 }
             }
             else
             {
-                VisualStateManager.GoToState(this, "NoDefaultCloseButton", false);
                 if (ActionButtonContent != null)
                 {
                     VisualStateManager.GoToState(this, "ActionButtonVisible", false);

@@ -19,11 +19,11 @@ namespace InfoBar
         String title;
         String message;
         String actionButtonContent;
-        String closeButtonContent;
         Color color;
         bool open;
         bool cancel;
         bool showClose;
+        bool hyperlink;
 
         public MainPage()
         {
@@ -156,28 +156,7 @@ namespace InfoBar
             Test.Message = message;
         }
 
-        private void CloseButtonContentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string iconName = e.AddedItems[0].ToString();
-
-            switch (iconName)
-            {
-                case "Short Text":
-                    closeButtonContent = "C:Short";
-                    break;
-                case "Long Text":
-                    closeButtonContent = "C:LongTextLorem ipsum dolor sit amet.";
-                    break;
-                case "No Text":
-                    closeButtonContent = null;
-                    break;
-            }
-        }
-
-        private void CloseButtonContent_Click(object sender, RoutedEventArgs e)
-        {
-            Test.CloseButtonContent = closeButtonContent;
-        }
+       
 
         private void ActionButtonContentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -262,5 +241,34 @@ namespace InfoBar
             Test.ShowCloseButton = showClose;
         }
 
+        private void Hyperlink_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string iconName = e.AddedItems[0].ToString();
+
+            switch (iconName)
+            {
+                case "Hyperlink":
+                    hyperlink = true;
+                    break;
+                case "No Hyperlink":
+                    hyperlink = false;
+                    break;
+            }
+        }
+
+        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (hyperlink)
+            {
+                HyperlinkButton hyp = new HyperlinkButton();
+                hyp.Content = "www.microsoft.com";
+                hyp.NavigateUri = new Uri("http://www.microsoft.com");
+                Test.HyperlinkButtonContent = hyp;
+            } else
+            {
+                HyperlinkButton hyp = null;
+                Test.HyperlinkButtonContent = hyp;
+            }
+        }
     }
 }
