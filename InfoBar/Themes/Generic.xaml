@@ -42,7 +42,12 @@
                             AutomationProperties.Name="{TemplateBinding AutomationProperties.Name}">
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="ButtonStates">
-                                <VisualState x:Name="NoButtonsVisible"/>
+                                <VisualState x:Name="NoButtonsVisible">
+                                    <VisualState.Setters>
+                                        <Setter Target="AlternateCloseButton.Visibility" Value="Collapsed"/>
+                                        <Setter Target="ActionButton.Visibility" Value="Collapsed"/>
+                                    </VisualState.Setters>
+                                </VisualState>
                                 <VisualState x:Name="CloseButtonVisible">
                                     <VisualState.Setters>
                                         <Setter Target="AlternateCloseButton.Visibility" Value="Visible"/>
@@ -193,8 +198,6 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
 
                                 <IconSourceElement x:Name="StandardIcon"
@@ -203,11 +206,8 @@
                                                IconSource="{TemplateBinding IconSource}"
                                                Grid.Column="0"/>
 
-                                <Grid x:Name="TextPanel" Grid.Column="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
+                                <StackPanel x:Name="TextPanel" Orientation ="Horizontal" Grid.Column="1">
+                                  
                                     <TextBlock x:Name="Title"
                                             Text="{TemplateBinding Title}"
                                             AutomationProperties.LandmarkType="Navigation" 
@@ -220,28 +220,26 @@
                                     <TextBlock x:Name="Message" 
                                             Text="{TemplateBinding Message}" 
                                             FontSize="{ThemeResource InfoBarFontSize}"
-                                            TextTrimming="CharacterEllipsis"
-                                               Grid.Column="1"/>
-                                </Grid>
-
-                                <Button Name="ActionButton" 
+                                            TextTrimming="CharacterEllipsis"/>
+                                    <Button Name="ActionButton" 
                                         Content="{TemplateBinding ActionButtonContent}" 
                                         Command="{TemplateBinding ActionButtonCommand}" 
                                         Style="{TemplateBinding ActionButtonStyle}"
                                         Width="96"
                                         Height="24"
-                                        Grid.Column="2"
                                         Padding="0" 
                                         CornerRadius="2,2,2,2"/>
 
-                                <HyperlinkButton x:Name="HyperlinkButton" 
+                                    <HyperlinkButton x:Name="HyperlinkButton" 
                                                  Content="{TemplateBinding HyperlinkButtonContent}"
                                                  Style="{TemplateBinding HyperlinkButtonStyle}" 
                                                  FontSize="{ThemeResource InfoBarFontSize}"
-                                                 Grid.Column="3"
                                                  Padding="0"
                                                  Foreground="{ThemeResource InfoBarHyperlinkButtonColor}"/>
+                                </StackPanel>
+
                                 
+
                                 <Button Name="AlternateCloseButton" 
                                     Command="{TemplateBinding CloseButtonCommand}" 
                                     CommandParameter="{TemplateBinding CloseButtonCommandParameter}"
@@ -250,7 +248,7 @@
                                     Width="{StaticResource InfoBarAlternateCloseButtonSize}" 
                                     Background="Transparent"
                                     FontSize="16"
-                                    Grid.Column="4"
+                                    Grid.Column="2"
                                     Margin="0, 0, -12, 0">
                                     <Viewbox Width="{StaticResource InfoBarAlternateCloseButtonGlyphSize}"
                                              Height="{StaticResource InfoBarAlternateCloseButtonGlyphSize}">

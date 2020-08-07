@@ -216,7 +216,7 @@ namespace InfoBar
             
             if(_actionButton != null)
             {
-                if (ActionButtonContent != null)
+                if (ActionButtonContent != null || HyperlinkButtonContent != null)
                 {
                     if (HyperlinkButtonContent != null)
                     {
@@ -546,21 +546,6 @@ namespace InfoBar
                 {
                     VisualStateManager.GoToState(this, "BothButtonsVisible", false);
                 }
-                else if (ActionButtonContent != null)
-                {
-                    VisualStateManager.GoToState(this, "ActionButtonVisible", false);
-                    if(_alternateCloseButton != null)
-                    {
-                        _alternateCloseButton.Visibility = Visibility.Visible;
-                    }
-                    
-                }
-                else if (ActionButtonContent == null)
-                {
-                    VisualStateManager.GoToState(this, "NoButtonsVisible", false);
-                    _actionButton.Visibility = Visibility.Collapsed;
-                    _alternateCloseButton.Visibility = Visibility.Visible;
-                } 
                 else
                 {
                     VisualStateManager.GoToState(this, "CloseButtonVisible", false);
@@ -579,6 +564,7 @@ namespace InfoBar
                 }
             }
         }
+    
 
 
         // Updates if InfoBar is opened
@@ -610,21 +596,20 @@ namespace InfoBar
             {
                 VisualStateManager.GoToState(this, "Visible", false);
                 IsOpen = true;
+                InfoBarAutomationPeer infoBarPeer = FrameworkElementAutomationPeer.FromElement(this) as InfoBarAutomationPeer ?? null;
+                infoBarPeer.RaiseWindowOpenedEvent(Title + " " + Message);
             }
             else
             {
                 VisualStateManager.GoToState(this, "Collapsed", false);
                 IsOpen = false;
                 RaiseClosedEvent();
+                InfoBarAutomationPeer infoBarPeer = FrameworkElementAutomationPeer.FromElement(this) as InfoBarAutomationPeer ?? null;
+                infoBarPeer.RaiseWindowOpenedEvent("InfoBar Dismissed");
             }
             OnToastChanged();
-            /*
-            InfoBarAutomationPeer infoBarPeer = FrameworkElementAutomationPeer.FromElement(this) as InfoBarAutomationPeer ?? null;
-            if (infoBarPeer != null)
-            {
-                string notificationString = getNotificationString();
-            }
-            */
+
+            
         }
 
         private string getAppName()
@@ -690,10 +675,6 @@ namespace InfoBar
             } 
         }
 
-        protected override AutomationPeer OnCreateAutomationPeer()
-        {
-            return new InfoBarAutomationPeer(this);
-        }
-
+    
     }
 }

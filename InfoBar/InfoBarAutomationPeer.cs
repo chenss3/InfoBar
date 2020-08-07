@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.ExtendedExecution.Foreground;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Automation;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Automation.Provider;
 
 namespace InfoBar
 {
@@ -28,7 +20,7 @@ namespace InfoBar
             return nameof(InfoBar);
         }
 
-        void RaiseWindowOpenedEvent(string displayString)
+        public void RaiseWindowOpenedEvent(string displayString)
         {
             AutomationPeer autPeer = this;
             autPeer.RaiseNotificationEvent(AutomationNotificationKind.Other, AutomationNotificationProcessing.CurrentThenMostRecent, displayString, "InfoBarOpenedActivityId");
@@ -39,8 +31,10 @@ namespace InfoBar
             }
         }
 
-        void RaiseWindowClosedEvent()
+        void RaiseWindowClosedEvent(string displayString)
         {
+            AutomationPeer autPeer = this;
+            autPeer.RaiseNotificationEvent(AutomationNotificationKind.Other, AutomationNotificationProcessing.CurrentThenMostRecent, displayString, "InfoBarClosedActivityId");
             if (AutomationPeer.ListenerExists(AutomationEvents.WindowClosed))
             {
                 RaiseAutomationEvent(AutomationEvents.WindowClosed);

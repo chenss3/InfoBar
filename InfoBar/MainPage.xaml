@@ -14,7 +14,7 @@
             <RowDefinition Height="3*"/>
             
         </Grid.RowDefinitions>
-        <local:InfoBar x:Name="Test" Title="Error While Saving" Message="Your document was unable to be saved." ActionButtonContent ="Go Here" HorizontalAlignment="Left" Width ="800" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity = "Critical" Closing="Test_Closing">
+        <local:InfoBar x:Name="Test" Title="Error While Saving" Message="Your document was unable to be saved."  HorizontalAlignment="Left" Width ="800" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity = "Critical" Closing="Test_Closing">
             <!--<local:InfoBar.IconSource>
                 <SymbolIconSource Symbol="CellPhone"/>
             </local:InfoBar.IconSource>-->
@@ -26,10 +26,10 @@
                     Content="Notes"
                     NavigateUri="https://www.microsoft.com/app/releasenotes" />
             </local:InfoBar.Content> -->
-            <local:InfoBar.HyperlinkButtonContent>
+            <!--<local:InfoBar.HyperlinkButtonContent>
                 <HyperlinkButton Content="www.microsoft.com" NavigateUri="http://www.microsoft.com"/>
-            </local:InfoBar.HyperlinkButtonContent>
-        </local:InfoBar>
+            </local:InfoBar.HyperlinkButtonContent> -->
+        </local:InfoBar> 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition/>
