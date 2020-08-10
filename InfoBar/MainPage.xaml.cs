@@ -72,9 +72,6 @@ namespace InfoBar
                 case "Default":
                     severity = InfoBarSeverity.Default;
                     break;
-                case "None":
-                    severity = InfoBarSeverity.None;
-                    break; 
             }
         }
 

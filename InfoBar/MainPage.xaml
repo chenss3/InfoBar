@@ -26,9 +26,9 @@
                     Content="Notes"
                     NavigateUri="https://www.microsoft.com/app/releasenotes" />
             </local:InfoBar.Content> -->
-            <!--<local:InfoBar.HyperlinkButtonContent>
+            <local:InfoBar.HyperlinkButtonContent>
                 <HyperlinkButton Content="www.microsoft.com" NavigateUri="http://www.microsoft.com"/>
-            </local:InfoBar.HyperlinkButtonContent> -->
+            </local:InfoBar.HyperlinkButtonContent>
         </local:InfoBar> 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -41,6 +41,10 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+
+            <HyperlinkButton Content="Click here" HorizontalAlignment="Right" Foreground="Blue">
+                
+            </HyperlinkButton>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <TextBlock>Severity Level</TextBlock>
                 <ComboBox Name="SeverityCombo" SelectionChanged="ComboBox_SelectionChanged">
@@ -49,7 +53,6 @@
                     <x:String>Informational</x:String>
                     <x:String>Success</x:String>
                     <x:String>Default</x:String>
-                    <x:String>None</x:String>
                 </ComboBox>
                 <Button x:Name="SeverityButton" Click="SeverityButton_Click" Content="Set" VerticalAlignment="Top"/>
             </StackPanel>

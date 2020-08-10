@@ -33,8 +33,7 @@ namespace InfoBar
         Warning,
         Informational,
         Success,
-        Default,
-        None
+        Default
     }
 
     public class InfoBarClosedEventArgs : EventArgs
@@ -199,7 +198,7 @@ namespace InfoBar
             {
                 if (Message != null && Message != "")
                 {
-                    if (ActionButtonContent != null)
+                    if (ActionButtonContent != null || HyperlinkButtonContent != null)
                     {
                         _message.Margin = new Thickness(0, 12, 12, 12);
                     }
@@ -264,7 +263,7 @@ namespace InfoBar
         public static readonly DependencyProperty IsOpenProperty =
             DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(InfoBar), new PropertyMetadata(false, OnPropertyChanged));
 
-
+        
         public bool ShowCloseButton
         {
             get { return (bool)GetValue(ShowCloseButtonProperty); }
@@ -387,17 +386,7 @@ namespace InfoBar
 
         // Using a DependencyProperty as the backing store for HyperlinkButtonContent.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HyperlinkButtonContentProperty =
-            DependencyProperty.Register(nameof(HyperlinkButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null));
-
-        public Style HyperlinkButtonStyle
-        {
-            get { return (Style)GetValue(HyperlinkButtonStyleProperty); }
-            set { SetValue(HyperlinkButtonStyleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for HyperlinkButtonStyle.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty HyperlinkButtonStyleProperty =
-            DependencyProperty.Register(nameof(HyperlinkButtonStyle), typeof(Style), typeof(InfoBar), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(HyperlinkButtonContent), typeof(object), typeof(InfoBar), new PropertyMetadata(null, OnPropertyChanged));
 
         /* Severity-Related Properties
         * 
@@ -526,10 +515,6 @@ namespace InfoBar
             {
                 VisualStateManager.GoToState(this, "Success", false);
             }
-            else if (Severity == InfoBarSeverity.None)
-            {
-                VisualStateManager.GoToState(this, "None", false);
-            }
             else
             {
                 VisualStateManager.GoToState(this, "Default", false);
@@ -570,7 +555,6 @@ namespace InfoBar
         // Updates if InfoBar is opened
         void OnIsOpenChanged()
         {
-
             if (IsOpen)
             {
                 lastCloseReason = InfoBarCloseReason.Programattic;
@@ -583,8 +567,6 @@ namespace InfoBar
                 RaiseClosingEvent();
                 alreadyRaised = false;
             }
-            
-            
         }
 
 
@@ -608,33 +590,8 @@ namespace InfoBar
                 infoBarPeer.RaiseWindowOpenedEvent("InfoBar Dismissed");
             }
             OnToastChanged();
-
             
         }
-
-        private string getAppName()
-        {
-            try
-            {
-                var package = Package.Current ?? null;
-                if (package != null)
-                {
-                    return package.DisplayName;
-                }
-            }
-            catch { }
-
-            return null;
-        }
-
-       /* private string getNotificationString()
-        {
-            string appName = getAppName();
-            if (!String.IsNullOrEmpty(appName))
-            {
-                return String.Format(GetLocalizedStringResources)
-            }
-        } */
 
         void OnToastChanged()
         {
@@ -675,6 +632,10 @@ namespace InfoBar
             } 
         }
 
-    
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new InfoBarAutomationPeer(this);
+        }
+
     }
 }

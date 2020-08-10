@@ -113,7 +113,6 @@
                                         <Setter Target="StandardColor.Fill" Value="{ThemeResource InfoBarSeverityDefaultStatusColor}"/>
                                     </VisualState.Setters>
                                 </VisualState>
-                                <VisualState x:Name="None"/>
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="StatusColorStates">
                                 <VisualState x:Name="StandardColorVisible">
@@ -232,10 +231,8 @@
 
                                     <HyperlinkButton x:Name="HyperlinkButton" 
                                                  Content="{TemplateBinding HyperlinkButtonContent}"
-                                                 Style="{TemplateBinding HyperlinkButtonStyle}" 
                                                  FontSize="{ThemeResource InfoBarFontSize}"
-                                                 Padding="0"
-                                                 Foreground="{ThemeResource InfoBarHyperlinkButtonColor}"/>
+                                                 Foreground="Black"/>
                                 </StackPanel>
 
                                 
