@@ -14,7 +14,7 @@
             <RowDefinition Height="3*"/>
             
         </Grid.RowDefinitions>
-        <local:InfoBar x:Name="Test" Title="Error While Saving" Message="Your document was unable to be saved."  HorizontalAlignment="Left" Width ="800" VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity = "Critical" Closing="Test_Closing">
+        <local:InfoBar x:Name="Test" Title="Error While Saving" Message="Your document was unable to be saved."  HorizontalAlignment="Left"  VerticalAlignment="Top" IsOpen="True" ActionButtonClick="Test_ActionButtonClick" Severity = "Critical" Closing="Test_Closing">
             <!--<local:InfoBar.IconSource>
                 <SymbolIconSource Symbol="CellPhone"/>
             </local:InfoBar.IconSource>-->

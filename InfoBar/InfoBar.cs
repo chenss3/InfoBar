@@ -156,11 +156,11 @@ namespace InfoBar
             {
                 if ((Title != null && Title != "") || (Message != null && Message != "") || ActionButtonContent != null || HyperlinkButtonContent != null || ShowCloseButton == true)
                 {
-                    _standardIcon.Margin = new Thickness(0, 12, 8, 12);
+                    VisualStateManager.GoToState(this, "StandardIconRightMargin", false);
                 }
                 else
                 {
-                    _standardIcon.Margin = new Thickness(0, 12, 0, 12);
+                    VisualStateManager.GoToState(this, "StandardIconNoRightMargin", false);
                 }
             }
 
@@ -168,11 +168,11 @@ namespace InfoBar
             {
                 if ((Title != null && Title != "") || (Message != null && Message != "") || ActionButtonContent != null || HyperlinkButtonContent != null || ShowCloseButton == true)
                 {
-                    _userIcon.Margin = new Thickness(0, 12, 8, 12);
+                    VisualStateManager.GoToState(this, "UserIconRightMargin", false);
                 }
                 else
                 {
-                    _userIcon.Margin = new Thickness(0, 12, 0, 12);
+                    VisualStateManager.GoToState(this, "UserIconNoRightMargin", false);
                 }
             }
 
@@ -182,15 +182,15 @@ namespace InfoBar
                 {
                     if ((_standardIcon != null || _userIcon != null) && (Message != null && Message != ""))
                     {
-                        _title.Margin = new Thickness(0, 12, 8, 12);
+                        VisualStateManager.GoToState(this, "TitleRightMargin", false);
                     }
                     else
                     {
-                        _title.Margin = new Thickness(0, 12, 0, 12);
+                        VisualStateManager.GoToState(this, "TitleNoRightMargin", false);
                     }
                 } else
                 {
-                    _title.Margin = new Thickness(0, 0, 0, 0);
+                    VisualStateManager.GoToState(this, "TitleNoMargin", false);
                 }
             }
            
@@ -200,16 +200,16 @@ namespace InfoBar
                 {
                     if (ActionButtonContent != null || HyperlinkButtonContent != null)
                     {
-                        _message.Margin = new Thickness(0, 12, 12, 12);
+                        VisualStateManager.GoToState(this, "MessageRightMargin", false);
                     }
                     else
                     {
-                        _message.Margin = new Thickness(0, 12, 0, 12);
+                        VisualStateManager.GoToState(this, "MessageNoRightMargin", false);
                     }
                 }
                 else
                 {
-                    _message.Margin = new Thickness(0, 0, 0, 0);
+                    VisualStateManager.GoToState(this, "MessageNoMargin", false);
                 }
             }
             
@@ -219,18 +219,23 @@ namespace InfoBar
                 {
                     if (HyperlinkButtonContent != null)
                     {
-                        _actionButton.Margin = new Thickness(0, 8, 12, 8);
+                        VisualStateManager.GoToState(this, "ActionButtonRightMarginHyperlinkAdjacent", false);
                     }
                     else
                     {
-                        _actionButton.Margin = new Thickness(0, 8, 4, 8);
+                        if(ShowCloseButton != false)
+                        {
+                            VisualStateManager.GoToState(this, "ActionButtonRightMarginCloseButtonAdjacent", false);
+                        } else
+                        {
+                            VisualStateManager.GoToState(this, "ActionButtonNoRightMargin", false);
+                        }
                     }
                 } else
                 {
-                    _actionButton.Margin = new Thickness(0, 0, 0, 0);
+                    VisualStateManager.GoToState(this, "ActionButtonNoMargin", false);
                 }
             }
-
         }
 
         private void checkMessage()
@@ -492,6 +497,14 @@ namespace InfoBar
             } else
             {
                 VisualStateManager.GoToState(this, "StandardIconVisible", false);
+            }
+        }
+
+        void OnBackgroundChanged()
+        {
+            if (Background != null)
+            {
+                VisualStateManager.GoToState(this, "UserBackgroundVisible", false);
             }
         }
 

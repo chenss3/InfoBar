@@ -164,6 +164,86 @@
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
+                            <VisualStateGroup x:Name="StandardIconMargins">
+                                <VisualState x:Name="StandardIconRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="StandardIcon.Margin" Value="0, 12, 8, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="StandardIconNoRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="StandardIcon.Margin" Value="0, 12, 0, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="UserIconMargins">
+                                <VisualState x:Name="UserIconRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="UserIcon.Margin" Value="0, 12, 8, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="UserIconNoRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="UserIcon.Margin" Value="0, 12, 0, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="TitleMargins">
+                                <VisualState x:Name="TitleRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="Title.Margin" Value="0, 12, 8, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="TitleNoRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="Title.Margin" Value="0, 12, 0, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="TitleNoMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="Title.Margin" Value="0, 0, 0, 0"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="MessageMargins">
+                                <VisualState x:Name="MessageRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="Message.Margin" Value="0, 12, 12, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="MessageNoRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="Message.Margin" Value="0, 12, 0, 12"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="MessageNoMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="Message.Margin" Value="0, 0, 0, 0"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="ActionButtonMargins">
+                                <VisualState x:Name="ActionButtonRightMarginHyperlinkAdjacent">
+                                    <VisualState.Setters>
+                                        <Setter Target="ActionButton.Margin" Value="0, 8, 12, 8"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="ActionButtonRightMarginCloseButtonAdjacent">
+                                    <VisualState.Setters>
+                                        <Setter Target="ActionButton.Margin" Value="0, 8, 4, 8"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="ActionButtonNoRightMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="ActionButton.Margin" Value="0, 8, 0, 8"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="ActionButtonNoMargin">
+                                    <VisualState.Setters>
+                                        <Setter Target="ActionButton.Margin" Value="0, 0, 0, 0"/>
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
 
 
