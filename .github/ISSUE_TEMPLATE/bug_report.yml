@@ -1,0 +1,44 @@
+name: "🕷️ Bug report"
+description: Report errors or unexpected behavior
+labels:
+- Issue-Bug
+- Needs-Triage
+body:
+- type: markdown
+  attributes:
+    value: Please make sure to [search for existing issues](https://github.com/microsoft/PowerToys/issues) before filing a new one!
+- id: version
+  type: input
+  attributes:
+    label: Microsoft PowerToys version
+    placeholder: 0.63.0
+    description: Hover over system tray icon or look at Settings
+  validations:
+    required: true
+
+- id: installation
+  type: dropdown
+  attributes:
+    label: Installation method
+    description: How / Where was PowerToys installed from?
+    multiple: true
+    options:
+      - GitHub
+      - PowerToys auto-update
+      - Microsoft Store
+      - WinGet
+      - Chocolatey
+      - Scoop
+      - Dev build in Visual Studio
+      - Other (please specify in "Steps to Reproduce")
+  validations:
+    required: true
+
+- id: repro
+  type: textarea
+  attributes:
+    label: Steps to reproduce
+    description: We highly suggest including screenshots and a bug report log (System tray > Report bug).
+    placeholder: Having detailed steps helps us reproduce the bug. 
+  validations:
+    required: true
