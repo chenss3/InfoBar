@@ -16,24 +16,6 @@ body:
   validations:
     required: true
 
-- id: installation
-  type: dropdown
-  attributes:
-    label: Installation method
-    description: How / Where was PowerToys installed from?
-    multiple: true
-    options:
-      - GitHub
-      - PowerToys auto-update
-      - Microsoft Store
-      - WinGet
-      - Chocolatey
-      - Scoop
-      - Dev build in Visual Studio
-      - Other (please specify in "Steps to Reproduce")
-  validations:
-    required: true
-
 - id: repro
   type: textarea
   attributes:
@@ -42,3 +24,19 @@ body:
     placeholder: Having detailed steps helps us reproduce the bug. 
   validations:
     required: true
+
+- id: expectedbehavior
+  type: textarea
+  attributes:
+    label: ✔️ Expected Behavior
+    placeholder: What were you expecting?
+  validations:
+    required: false
+
+- id: actualbehavior
+  type: textarea
+  attributes:
+    label: ❌ Actual Behavior
+    placeholder: What happened instead?
+  validations:
+    required: false
