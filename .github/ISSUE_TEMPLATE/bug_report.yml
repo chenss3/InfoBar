@@ -10,11 +10,21 @@ body:
 - id: version
   type: input
   attributes:
-    label: Microsoft PowerToys version
-    placeholder: 0.63.0
-    description: Hover over system tray icon or look at Settings
+    label: Microsoft DevHub version
+    placeholder: 0.0.1
   validations:
     required: true
+
+- id: toolareas
+  type: dropdown
+  attributes:
+    label: Area(s) with issue? 
+    description: What tools had an issue? Chck all that apply. 
+    multiple: true
+    options:
+      - "Tool 1"
+      - "Tool 2"
+      - "Tool 3"
 
 - id: repro
   type: textarea
@@ -38,5 +48,22 @@ body:
   attributes:
     label: ❌ Actual Behavior
     placeholder: What happened instead?
+  validations:
+    required: false
+
+- id: includedsysinfo
+  type: textarea
+  attributes:
+    label: Included System Information
+    placeholder: i.e. CPU, Memory usage 
+  validations:
+    required: false
+
+- id: othersoftware
+  type: textarea
+  attributes:
+    label: Other Software
+    description: If you're reporting a bug about our interaction with other software, what software is being used? What versions? 
+    placeholder: i.e. OS Build version, .NET version, WinAppSDK version
   validations:
     required: false
