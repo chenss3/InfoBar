@@ -9,13 +9,15 @@ body:
 - type: markdown
   attributes:
     value: Please make sure to [search for existing issues](https://github.com/microsoft/PowerToys/issues) before filing a new one!
-- type: input
+- id: version 
+  type: input
   attributes:
     label: Microsoft DevHub version
     placeholder: 0.63.0
   validations:
     required: true
-- type: dropdown
+- id: toolareas
+  type: dropdown
   attributes:
     label: Utility with translation issue
     options:
@@ -24,7 +26,8 @@ body:
     - Tool 3
   validations:
     required: true
-- type: input
+- id: languageaffected
+  type: input
   attributes:
     label: 🌐 Language affected
     placeholder: "German"
