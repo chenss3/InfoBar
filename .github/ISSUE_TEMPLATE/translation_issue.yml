@@ -19,13 +19,13 @@ body:
 - id: toolareas
   type: dropdown
   attributes:
-    label: Utility with translation issue
+    label: Area(s) with issue? 
+    description: What tools had an issue? Check all that apply. 
+    multiple: true
     options:
-    - Tool 1
-    - Tool 2
-    - Tool 3
-  validations:
-    required: true
+      - "Tool 1"
+      - "Tool 2"
+      - "Tool 3"
 - id: languageaffected
   type: input
   attributes:
