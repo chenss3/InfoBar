@@ -16,6 +16,16 @@ body:
   validations:
     required: true
 
+- id: windowsversion
+  type: input
+  attributes:
+    label: Windows build number
+    placeholder: "10.0.23400.0"
+    description: |
+      Please run `ver` or `[Environment]::OSVersion`.
+  validations:
+    required: false
+    
 - id: toolareas
   type: dropdown
   attributes:

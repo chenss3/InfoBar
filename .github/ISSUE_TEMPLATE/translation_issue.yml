@@ -47,7 +47,7 @@ body:
     required: true
 - type: textarea
   attributes:
-    label: ℹ Why is the current translation wrong
+    label: Why is the current translation wrong
     placeholder: Why do you feel this is incorrect?
   validations:
     required: true
