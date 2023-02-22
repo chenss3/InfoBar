@@ -12,7 +12,7 @@ body:
 - id: version 
   type: input
   attributes:
-    label: Microsoft DevHub version
+    label: Microsoft DevHome version
     placeholder: 0.63.0
   validations:
     required: true

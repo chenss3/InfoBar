@@ -11,7 +11,7 @@ body:
 - id: version
   type: input
   attributes:
-    label: Microsoft DevHub version
+    label: Microsoft DevHome version
     placeholder: 0.0.1
   validations:
     required: true
@@ -25,7 +25,7 @@ body:
       Please run `ver` or `[Environment]::OSVersion`.
   validations:
     required: false
-    
+
 - id: toolareas
   type: dropdown
   attributes:
