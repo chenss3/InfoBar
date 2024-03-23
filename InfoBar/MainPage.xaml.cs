@@ -38,7 +38,7 @@ namespace InfoBar
 
         private async void Test_CloseButtonClick(object sender, CloseButtonClickEventArgs e)
         {
-            await new MessageDialog("Thank you, mate").ShowAsync();
+            await new MessageDialog("Thank you, mate. I'm australian").ShowAsync();
         }
 
         private void Test_Closing(InfoBar sender, InfoBarClosingEventArgs args)
